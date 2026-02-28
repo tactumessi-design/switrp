@@ -3,186 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swit RP | Community Portal</title>
-    
+    <title>Swit RP | Management Portal</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
-        :root {
-            --blue: #0084ff;
-            --bg: #020617;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
+        :root { 
+            --blue: #0084ff; --bg: #020617; --glass: rgba(255, 255, 255, 0.03); 
+            --border: rgba(255, 255, 255, 0.08); --red: #ef4444; --green: #22c55e;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: white; overflow-x: hidden; }
-
-        /* Fundal */
-        .background-effect {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% -20%, #003366, transparent), #020617;
-            z-index: -1;
-        }
-
-        /* Navigatie */
-        nav {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 5%; background: rgba(2, 6, 23, 0.7);
-            backdrop-filter: blur(15px); border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 1000;
-        }
-
-        .logo { font-size: 1.5rem; font-weight: 800; }
+        .bg-fx { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% -20%, #003366, transparent), #020617; z-index: -1; }
+        
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 1.5rem; font-weight: 800; text-decoration: none; color: white; }
         .logo span { color: var(--blue); }
 
-        /* Bara de cautare */
-        .search-box { position: relative; width: 280px; }
-        .search-box input {
-            width: 100%; background: var(--glass); border: 1px solid var(--border);
-            padding: 10px 15px 10px 35px; border-radius: 12px; color: white; outline: none;
-        }
-        .search-box i { position: absolute; left: 12px; top: 12px; color: #64748b; }
-
-        #results {
-            position: absolute; top: 50px; width: 100%; background: #0f172a;
-            border: 1px solid var(--border); border-radius: 10px; display: none;
-        }
-        .user-item { padding: 10px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
-
-        /* Butoane & Profil */
-        .auth-zone { display: flex; align-items: center; gap: 15px; }
-        .btn-discord { background: #5865F2; padding: 8px 18px; border-radius: 10px; color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
-        .user-chip { display: none; align-items: center; gap: 10px; background: var(--glass); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); }
-        .user-chip img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--blue); }
-
-        /* Hero & Cards */
-        .hero { text-align: center; padding: 80px 5%; }
-        .hero h1 { font-size: 4rem; font-weight: 800; margin-bottom: 15px; }
+        .container { max-width: 1200px; margin: 40px auto; padding: 20px; }
         
-        .main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; padding: 40px 5%; }
-        .card { 
-            background: var(--glass); border: 1px solid var(--border); padding: 35px; 
-            border-radius: 20px; text-align: center; backdrop-filter: blur(10px);
-            transition: 0.3s;
-        }
-        .card:hover { border-color: var(--blue); transform: translateY(-5px); }
-        .card i { font-size: 2.5rem; color: var(--blue); margin-bottom: 20px; }
+        /* Admin Panel */
+        #adminPanel { display: none; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 30px; border-radius: 24px; margin-bottom: 40px; animation: fadeIn 0.5s ease; }
+        .admin-controls { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .admin-btn { padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--glass); color: white; cursor: pointer; transition: 0.3s; }
+        .admin-btn:hover { background: var(--blue); }
+
+        /* Grid & Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .card { background: var(--glass); border: 1px solid var(--border); padding: 40px; border-radius: 24px; backdrop-filter: blur(10px); text-align: center; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); border-color: var(--blue); }
         
-        .btn-action { 
-            display: inline-block; width: 100%; background: var(--blue); 
-            color: white; padding: 12px; border-radius: 10px; text-decoration: none; 
-            font-weight: 700; margin-top: 20px;
-        }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 15px; }
+        .status-open { background: rgba(34, 197, 94, 0.1); color: var(--green); border: 1px solid var(--green); }
+        .status-closed { background: rgba(239, 68, 68, 0.1); color: var(--red); border: 1px solid var(--red); }
+
+        .btn { display: block; width: 100%; padding: 14px; margin-top: 20px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-decoration: none; color: white; transition: 0.3s; }
+        .btn-blue { background: var(--blue); box-shadow: 0 4px 15px rgba(0, 132, 255, 0.3); }
+        .btn-disabled { background: #1e293b; cursor: not-allowed; opacity: 0.6; pointer-events: none; }
+
+        /* Profile & Login */
+        .user-info { display: flex; align-items: center; gap: 12px; background: var(--glass); padding: 6px 15px; border-radius: 14px; border: 1px solid var(--border); }
+        .user-info img { width: 30px; border-radius: 50%; border: 1px solid var(--blue); }
+        .btn-discord { background: #5865F2; padding: 10px 20px; border-radius: 12px; color: white; text-decoration: none; font-weight: 700; }
+
+        .app-item { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; margin-top: 15px; border-left: 4px solid var(--blue); text-align: left; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="background-effect"></div>
+<div class="bg-fx"></div>
 
 <nav>
-    <div class="logo">SWIT <span>RP</span></div>
-    
-    <div class="search-box">
-        <i class="fas fa-search"></i>
-        <input type="text" id="searchInp" placeholder="Caută jucători..." onkeyup="doSearch()">
-        <div id="results"></div>
-    </div>
-
-    <div class="auth-zone">
-        <a href="#" id="loginBtn" class="btn-discord" onclick="login()"><i class="fab fa-discord"></i> Login</a>
-        <div class="user-chip" id="userBox">
-            <img src="" id="userImg">
-            <span id="userName">User</span>
-        </div>
+    <a href="#" class="logo">SWIT <span>RP</span></a>
+    <div id="authZone">
+        <a href="#" class="btn-discord" onclick="login()"><i class="fab fa-discord"></i> Login cu Discord</a>
     </div>
 </nav>
 
-<header class="hero">
-    <h1>SWIT <span style="color:var(--blue)">ROLEPLAY</span></h1>
-    <p>Comunitatea ta de FiveM, acum cu un portal complet integrat.</p>
-</header>
-
-<div class="main-grid">
-    <div class="card">
-        <i class="fas fa-shopping-cart"></i>
-        <h3>Shop Server</h3>
-        <p>Mașini VIP și pachete de monede pentru server.</p>
-        <a href="#" class="btn-action">Deschide Shop</a>
+<div class="container">
+    <div id="adminPanel">
+        <h2 style="color: var(--red);"><i class="fas fa-crown"></i> Panou Fondator</h2>
+        <div class="admin-controls">
+            <button class="admin-btn" onclick="toggleOption('shop')">Toggle Shop</button>
+            <button class="admin-btn" onclick="toggleOption('staff_apps')">Toggle Staff Apps</button>
+            <button class="admin-btn" onclick="toggleOption('faction_apps')">Toggle Faction Apps</button>
+        </div>
+        <div id="appsList" style="margin-top: 25px;">
+            <p style="font-size: 0.9rem; color: #64748b;">Aplicații în așteptare:</p>
+            <div id="pendingApps"></div>
+        </div>
     </div>
 
-    <div class="card">
-        <i class="fas fa-user-shield"></i>
-        <h3>Aplicare Staff</h3>
-        <p>Vrei să faci parte din echipa Swit RP?</p>
-        <a href="#" class="btn-action" style="background: rgba(255,255,255,0.05);">Aplică acum</a>
-    </div>
+    <div class="grid">
+        <div class="card">
+            <div id="badge-shop" class="status-badge"></div>
+            <i class="fas fa-shopping-bag fa-2x" style="color:var(--blue); margin-bottom:15px; display:block;"></i>
+            <h3>Shop Server</h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 10px;">Achiziționează mașini VIP și monede.</p>
+            <a href="https://tebex.io" id="btn-shop" class="btn">ACCESEAZĂ</a>
+        </div>
 
-    <div class="card">
-        <i class="fas fa-users"></i>
-        <h3>Aplicare Facțiuni</h3>
-        <p>Intră în Poliție, SMURD sau Mafie.</p>
-        <a href="#" class="btn-action" style="background: rgba(255,255,255,0.05);">Aplică acum</a>
+        <div class="card">
+            <div id="badge-staff_apps" class="status-badge"></div>
+            <i class="fas fa-shield-alt fa-2x" style="color:var(--blue); margin-bottom:15px; display:block;"></i>
+            <h3>Aplicații Staff</h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 10px;">Alătură-te echipei administrative.</p>
+            <button id="btn-staff_apps" onclick="sendApp('staff')" class="btn">APLICĂ ACUM</button>
+        </div>
+
+        <div class="card">
+            <div id="badge-faction_apps" class="status-badge"></div>
+            <i class="fas fa-users fa-2x" style="color:var(--blue); margin-bottom:15px; display:block;"></i>
+            <h3>Aplicații Facțiuni</h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 10px;">Intră în LSPD, SMURD sau Mafii.</p>
+            <button id="btn-faction_apps" onclick="sendApp('faction')" class="btn">APLICĂ ACUM</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // DATELE TALE INTEGRATE
     const S_URL = 'https://xdbdgfnrpglcqsguvcrz.supabase.co';
     const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYmRnZm5ycGdsY3FzZ3V2Y3J6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTc2OTMsImV4cCI6MjA4Nzg3MzY5M30.NWjbjlP2p3wf0XmaEI2HjlgaIR3WNBYhkA5qvquv3aQ';
     const CLIENT_ID = '1475937365087486022';
-    const REDIRECT_URI = window.location.origin + window.location.pathname;
+    const OWNER_ID = '1444054508484169728';
 
     const sb = supabase.createClient(S_URL, S_KEY);
+    let user = null;
 
-    function login() {
-        window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
+    async function refreshUI() {
+        const { data: settings } = await sb.from('server_settings').select('*');
+        settings.forEach(s => {
+            const badge = document.getElementById(`badge-${s.id}`);
+            const btn = document.getElementById(`btn-${s.id}`);
+            if(s.is_open) {
+                badge.className = "status-badge status-open";
+                badge.innerHTML = '<i class="fas fa-check-circle"></i> DESCHIS';
+                btn.className = "btn btn-blue";
+            } else {
+                badge.className = "status-badge status-closed";
+                badge.innerHTML = '<i class="fas fa-times-circle"></i> ÎNCHIS';
+                btn.className = "btn btn-disabled";
+            }
+        });
     }
 
-    async function sync(user) {
-        await sb.from('profiles').upsert({ 
-            discord_id: user.id, 
-            username: user.username, 
-            avatar: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
-        }, { onConflict: 'discord_id' });
+    async function toggleOption(id) {
+        if(user?.id !== OWNER_ID) return;
+        const { data } = await sb.from('server_settings').select('is_open').eq('id', id).single();
+        await sb.from('server_settings').update({ is_open: !data.is_open }).eq('id', id);
+        refreshUI();
     }
 
-    async function doSearch() {
-        const val = document.getElementById('searchInp').value;
-        const resDiv = document.getElementById('results');
-        if(val.length < 2) { resDiv.style.display = 'none'; return; }
-
-        const { data } = await sb.from('profiles').select('*').ilike('username', `%${val}%`).limit(5);
-        
-        resDiv.innerHTML = '';
-        if(data && data.length > 0) {
-            resDiv.style.display = 'block';
-            data.forEach(u => {
-                resDiv.innerHTML += `<div class="user-item"><img src="${u.avatar}" width="25" style="border-radius:50%"> ${u.username}</div>`;
-            });
+    async function sendApp(type) {
+        if(!user) return alert("Trebuie să te loghezi întâi!");
+        const msg = prompt(`Scrie aplicația ta pentru ${type}:`);
+        if(msg) {
+            await sb.from('applications').insert({ discord_id: user.id, username: user.username, type: type, content: msg });
+            alert("Aplicația a fost trimisă!");
         }
     }
 
-    window.onload = () => {
+    async function loadApps() {
+        if(user?.id !== OWNER_ID) return;
+        const { data } = await sb.from('applications').select('*').eq('status', 'pending');
+        const container = document.getElementById('pendingApps');
+        container.innerHTML = data.length ? '' : '<p style="color:#444; font-size:0.8rem;">Nicio aplicație nouă.</p>';
+        data.forEach(a => {
+            container.innerHTML += `
+                <div class="app-item">
+                    <p><b>${a.username}</b> (${a.type}): ${a.content}</p>
+                    <div style="margin-top:10px;">
+                        <button onclick="updateApp('${a.id}', 'accepted')" style="color:var(--green); background:none; border:none; cursor:pointer; font-weight:bold;">[ACCEPTĂ]</button>
+                        <button onclick="updateApp('${a.id}', 'rejected')" style="color:var(--red); background:none; border:none; cursor:pointer; font-weight:bold; margin-left:10px;">[RESPINGE]</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    async function updateApp(id, status) {
+        await sb.from('applications').update({ status: status }).eq('id', id);
+        loadApps();
+    }
+
+    function login() {
+        window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}&response_type=token&scope=identify`;
+    }
+
+    window.onload = async () => {
+        refreshUI();
         const frag = new URLSearchParams(window.location.hash.slice(1));
         const token = frag.get('access_token');
-
         if (token) {
-            fetch('https://discord.com/api/users/@me', { headers: { authorization: `Bearer ${token}` } })
-            .then(r => r.json())
-            .then(u => {
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('userBox').style.display = 'flex';
-                document.getElementById('userName').innerText = u.username;
-                document.getElementById('userImg').src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png`;
-                sync(u);
-                window.history.replaceState({}, document.title, "/");
-            });
+            const res = await fetch('https://discord.com/api/users/@me', { headers: { authorization: `Bearer ${token}` } });
+            user = await res.json();
+            document.getElementById('authZone').innerHTML = `<div class="user-info"><img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png"> <span>${user.username}</span></div>`;
+            if(user.id === OWNER_ID) {
+                document.getElementById('adminPanel').style.display = 'block';
+                loadApps();
+            }
+            window.history.replaceState({}, document.title, "/");
         }
     };
 </script>
-
 </body>
 </html>
