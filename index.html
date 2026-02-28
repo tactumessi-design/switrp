@@ -2,151 +2,201 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <title>Swit RP | Management Portal</title>
+    <title>Swit RP | Advanced Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --blue: #0084ff; --red: #ff4757; --bg: #0a0f1d; }
-        body { background: var(--bg); color: white; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; }
-        
-        .nav { background: rgba(0,0,0,0.5); padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; }
-        .container { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
-        
-        /* Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
-        .card { background: #161e2d; padding: 20px; border-radius: 15px; text-align: center; cursor: pointer; border: 1px solid #1e293b; transition: 0.2s; }
-        .card:hover { border-color: var(--blue); transform: translateY(-3px); }
-        .card img { width: 70px; border-radius: 50%; margin-bottom: 10px; }
+        :root { --blue: #0084ff; --bg: #030712; --card: #0b0f1a; --border: rgba(255,255,255,0.08); --red: #ff4757; --green: #2ed573; }
+        * { margin:0; padding:0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: white; overflow-x: hidden; }
 
-        /* Tags */
-        .tag { font-size: 0.7rem; font-weight: 800; padding: 5px 10px; border-radius: 5px; text-transform: uppercase; }
-        .fondator { background: var(--red); }
-        .user { background: #334155; }
+        /* Auth Screen */
+        #authScreen { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at top, #001f4d, #030712); }
+        .auth-card { background: var(--card); padding: 40px; border-radius: 24px; border: 1px solid var(--border); width: 350px; text-align: center; }
 
-        /* Modal */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 100; }
-        .modal-content { background: #161e2d; padding: 40px; border-radius: 20px; width: 450px; text-align: center; border: 1px solid #334155; }
-        
-        /* Admin Section */
-        .admin-zone { background: rgba(255, 71, 87, 0.1); border: 1px dashed var(--red); padding: 15px; border-radius: 10px; margin-top: 20px; text-align: left; font-size: 0.8rem; }
-        
-        input { width: 100%; padding: 12px; border-radius: 10px; background: #0a0f1d; border: 1px solid #334155; color: white; margin-bottom: 20px; }
-        .btn { background: var(--blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 800; }
+        /* Full Screen Profile */
+        #profileScreen { display: none; min-height: 100vh; padding: 50px; background: #030712; }
+        .profile-container { max-width: 1100px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+
+        .data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .data-card { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid var(--border); transition: 0.3s; }
+        .data-card:hover { border-color: var(--blue); transform: translateY(-3px); }
+        .label { color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+        .value { font-size: 1.1rem; font-weight: 600; margin-top: 5px; color: #f8fafc; }
+
+        /* Admin Only UI */
+        .admin-only { border: 1px solid var(--red); background: rgba(255, 71, 87, 0.05); }
+
+        /* Buttons */
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: #161b22; color: white; outline: none; }
+        .btn { cursor: pointer; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; transition: 0.3s; width: 100%; margin-top: 10px; }
+        .btn-blue { background: var(--blue); color: white; }
+        .btn-discord { background: #5865F2; color: white; margin-top: 20px; }
+        .btn-logout { background: transparent; border: 1px solid var(--border); color: #64748b; width: auto; }
     </style>
 </head>
 <body>
 
-<div class="nav">
-    <div style="font-weight: 800; font-size: 1.5rem;">SWIT <span style="color:var(--blue)">RP</span></div>
-    <div id="userInfo"><button class="btn" onclick="login()">LOGIN DISCORD</button></div>
+<div id="authScreen">
+    <div class="auth-card">
+        <h2 style="margin-bottom: 20px;">SWIT <span style="color:var(--blue)">RP</span></h2>
+        <input type="text" id="userIn" placeholder="Utilizator">
+        <input type="password" id="passIn" placeholder="Parolă">
+        <button class="btn btn-blue" onclick="handleAuth('login')">Conectare</button>
+        <button class="btn" onclick="handleAuth('register')" style="background:none; color:var(--blue)">Creează cont</button>
+    </div>
 </div>
 
-<div class="container">
-    <input type="text" id="search" placeholder="Caută jucător (Nume Discord)..." onkeyup="search()">
-    <div class="grid" id="playerGrid"></div>
-</div>
+<div id="profileScreen">
+    <div class="profile-container">
+        <div class="header">
+            <div>
+                <h1 id="view-username">Salut, Admin</h1>
+                <p id="view-lastlogin" style="color:#64748b; font-size:0.8rem;">Ultima logare: 00:00:00</p>
+            </div>
+            <button class="btn btn-logout" onclick="logout()">LOGOUT</button>
+        </div>
 
-<div id="profileModal" class="modal" onclick="if(event.target == this) this.style.display='none'">
-    <div class="modal-content">
-        <img id="m-avatar" src="" style="width:100px; border-radius:50%;">
-        <h2 id="m-name">Nume</h2>
-        <div id="m-tag" class="tag">USER</div>
-        
-        <div id="m-admin" class="admin-zone" style="display:none;">
-            <p style="color:var(--red); font-weight:800;">DETALII FONDATOR:</p>
-            <p>IP: <span id="m-ip">0.0.0.0</span></p>
-            <p>HWID: <span id="m-hwid">N/A</span></p>
-            <p>Notă: <textarea id="m-note" style="width:100%; background:none; color:white; border:1px solid #334155; margin-top:5px;"></textarea></p>
-            <button class="btn" style="background:var(--red); width:100%; margin-top:10px;" onclick="saveNote()">SALVEAZĂ</button>
+        <div class="data-grid">
+            <div class="data-card">
+                <div class="label"><i class="fas fa-user"></i> Nume FiveM</div>
+                <div class="value" id="d-fivem-name">Se încarcă...</div>
+            </div>
+            <div class="data-card">
+                <div class="label"><i class="fas fa-hashtag"></i> ID FiveM</div>
+                <div class="value" id="d-fivem-id">#0000</div>
+            </div>
+            <div class="data-card">
+                <div class="label"><i class="fas fa-coins"></i> Bani (Cash / Bancă)</div>
+                <div class="value" id="d-money">0$ / 0$</div>
+            </div>
+            
+            <div class="data-card">
+                <div class="label"><i class="fas fa-gem"></i> Status VIP</div>
+                <div class="value" id="d-vip" style="color:var(--green)">Diamond</div>
+            </div>
+            <div class="data-card">
+                <div class="label"><i class="fas fa-shield-alt"></i> Grad Staff</div>
+                <div class="value" id="d-staff">Fondator</div>
+            </div>
+            <div class="data-card">
+                <div class="label"><i class="fas fa-map-marker-alt"></i> Last Location</div>
+                <div class="value" id="d-location">X:0, Y:0, Z:0</div>
+            </div>
+
+            <div class="data-card">
+                <div class="label">Discord ID</div>
+                <div class="value" id="d-discord-id">Neconectat</div>
+                <button id="discordBtn" class="btn btn-discord" onclick="linkDiscord()"><i class="fab fa-discord"></i> Connect Discord</button>
+            </div>
+            <div class="data-card">
+                <div class="label">FiveM License</div>
+                <div class="value" id="d-license" style="font-size:0.7rem; color:#64748b;">license:xxx...</div>
+            </div>
+            <div class="data-card">
+                <div class="label">Conturi Asociate</div>
+                <div class="value" id="d-associated">N/A</div>
+            </div>
+
+            <div class="data-card admin-only">
+                <div class="label" style="color:var(--red)">IP Address (Admin Only)</div>
+                <div class="value" id="d-ip">0.0.0.0</div>
+            </div>
+            <div class="data-card admin-only">
+                <div class="label" style="color:var(--red)">HWID (Hardware ID)</div>
+                <div class="value" id="d-hwid">Unidentified</div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
     const S_URL = 'https://xdbdgfnrpglcqsguvcrz.supabase.co';
-    const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYmRnZm5ycGdsY3FzZ3V2Y3J6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTc2OTMsImV4cCI6MjA4Nzg3MzY5M30.NWjbjlP2p3wf0XmaEI2HjlgaIR3WNBYhkA5qvquv3aQ';
-    const OWNER_ID = '1444054508484169728';
+    const S_KEY = 'PUNE_CHEIA_AICI';
     const CLIENT_ID = '1475937365087486022';
+    const OWNER_ID = '1444054508484169728';
 
     const sb = supabase.createClient(S_URL, S_KEY);
-    let me = null;
-    let viewingId = null;
+    let sessionUser = null;
 
-    async function checkAuth() {
-        const hash = new URLSearchParams(window.location.hash.slice(1));
-        const token = hash.get('access_token') || localStorage.getItem('sb_token');
+    // --- AUTH SYSTEM ---
+    async function handleAuth(type) {
+        const user = document.getElementById('userIn').value;
+        const pass = document.getElementById('passIn').value;
 
-        if (token) {
-            localStorage.setItem('sb_token', token);
-            window.history.replaceState({}, "", "/");
-            const r = await fetch('https://discord.com/api/users/@me', { headers: { Authorization: `Bearer ${token}` } });
-            if (r.ok) {
-                me = await r.json();
-                document.getElementById('userInfo').innerHTML = `<b>${me.username}</b>`;
-                
-                // Luam IP-ul jucatorului
-                const ipObj = await fetch('https://api.ipify.org?format=json').then(res => res.json());
-
-                // Salvam in baza de date
-                await sb.from('profiles').upsert({
-                    discord_id: me.id,
-                    username: me.username,
-                    avatar: `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png`,
-                    ip_address: ipObj.ip,
-                    rank: (me.id === OWNER_ID) ? 'Fondator' : 'User'
-                });
+        if(type === 'register') {
+            const { error } = await sb.from('users').insert({ username: user, password: pass });
+            if(error) return alert("Eroare: Nume deja folosit.");
+            alert("Cont creat! Acum te poți loga.");
+        } else {
+            const { data, error } = await sb.from('users').select('*').eq('username', user).eq('password', pass).single();
+            if(data) {
+                sessionUser = data;
+                localStorage.setItem('swit_user', JSON.stringify(data));
+                showProfile();
+            } else {
+                alert("Date incorecte!");
             }
         }
     }
 
-    function login() {
+    // --- DISCORD LINK ---
+    function linkDiscord() {
         const uri = encodeURIComponent(window.location.origin + window.location.pathname);
         window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${uri}&response_type=token&scope=identify`;
     }
 
-    async function search() {
-        const val = document.getElementById('search').value;
-        if (val.length < 2) return;
-        const { data } = await sb.from('profiles').select('*').ilike('username', `%${val}%`);
-        const grid = document.getElementById('playerGrid');
-        grid.innerHTML = '';
-        data.forEach(p => {
-            grid.innerHTML += `
-                <div class="card" onclick="viewProfile('${p.discord_id}')">
-                    <img src="${p.avatar}">
-                    <div style="font-weight:800;">${p.username}</div>
-                    <span class="tag ${p.rank.toLowerCase()}">${p.rank}</span>
-                </div>`;
-        });
-    }
-
-    async function viewProfile(id) {
-        viewingId = id;
-        const { data: p } = await sb.from('profiles').select('*').eq('discord_id', id).single();
-        document.getElementById('m-avatar').src = p.avatar;
-        document.getElementById('m-name').innerText = p.username;
-        document.getElementById('m-tag').innerText = p.rank;
-        document.getElementById('m-tag').className = 'tag ' + p.rank.toLowerCase();
-
-        // Daca esti fondator, vezi zona de admin
-        if (me && me.id === OWNER_ID) {
-            document.getElementById('m-admin').style.display = 'block';
-            document.getElementById('m-ip').innerText = p.ip_address;
-            document.getElementById('m-hwid').innerText = p.hwid;
-            document.getElementById('m-note').value = p.admin_note;
-        } else {
-            document.getElementById('m-admin').style.display = 'none';
+    async function checkDiscordCallback() {
+        const hash = new URLSearchParams(window.location.hash.slice(1));
+        const token = hash.get('access_token');
+        if(token && sessionUser) {
+            const r = await fetch('https://discord.com/api/users/@me', { headers: { Authorization: `Bearer ${token}` } });
+            const dUser = await r.json();
+            
+            await sb.from('users').update({ discord_id: dUser.id }).eq('id', sessionUser.id);
+            window.history.replaceState({}, "", "/");
+            location.reload();
         }
-        document.getElementById('profileModal').style.display = 'flex';
     }
 
-    async function saveNote() {
-        const note = document.getElementById('m-note').value;
-        await sb.from('profiles').update({ admin_note: note }).eq('discord_id', viewingId);
-        alert("Salvat!");
+    // --- UI DISPLAY ---
+    function showProfile() {
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('profileScreen').style.display = 'block';
+        
+        const u = sessionUser;
+        document.getElementById('view-username').innerText = `Salut, ${u.username}`;
+        document.getElementById('view-lastlogin').innerText = `Ultima logare: ${new Date(u.last_login).toLocaleString()}`;
+        
+        document.getElementById('d-fivem-name').innerText = u.fivem_name;
+        document.getElementById('d-fivem-id').innerText = "#" + u.fivem_id;
+        document.getElementById('d-money').innerText = `${u.cash}$ / ${u.bank}$`;
+        document.getElementById('d-vip').innerText = u.vip_level;
+        document.getElementById('d-staff').innerText = u.staff_rank;
+        document.getElementById('d-location').innerText = u.last_location;
+        document.getElementById('d-license').innerText = u.license;
+        document.getElementById('d-discord-id').innerText = u.discord_id || "Neconectat";
+        document.getElementById('d-ip').innerText = u.ip_address || "0.0.0.0";
+        document.getElementById('d-hwid').innerText = u.hwid || "N/A";
+
+        if(u.discord_id) document.getElementById('discordBtn').style.display = 'none';
     }
 
-    window.onload = checkAuth;
+    function logout() {
+        localStorage.clear();
+        location.reload();
+    }
+
+    window.onload = () => {
+        const saved = localStorage.getItem('swit_user');
+        if(saved) {
+            sessionUser = JSON.parse(saved);
+            showProfile();
+        }
+        checkDiscordCallback();
+    };
 </script>
 </body>
 </html>
