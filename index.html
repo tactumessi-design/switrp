@@ -3,305 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swit RP | Community Hub</title>
+    <title>Swit RP | Ultimate Portal</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
     <style>
         :root { 
-            --blue: #0084ff; --bg: #050a18; --glass: rgba(255, 255, 255, 0.03); 
-            --border: rgba(255, 255, 255, 0.08); --red: #ff3e3e; --green: #10b981;
-            --gold: #f59e0b; --purple: #a855f7;
+            --blue: #0084ff; --bg: #030712; --glass: rgba(255, 255, 255, 0.03); 
+            --border: rgba(255, 255, 255, 0.1); --red: #ff4757; --gold: #ffa502;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: white; overflow-x: hidden; }
-        .bg-fx { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 0% 0%, #001f4d 0%, transparent 50%), radial-gradient(circle at 100% 100%, #001f4d 0%, transparent 50%); z-index: -1; }
         
-        /* Layout Forum Style */
+        /* Fundal Animat */
+        .bg-gradient {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 30%, #001f4d 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, #001f4d 0%, transparent 40%);
+            z-index: -1; filter: blur(50px);
+        }
+
         .wrapper { display: flex; min-height: 100vh; }
         
-        /* Sidebar */
-        aside { width: 280px; background: rgba(2, 6, 23, 0.8); border-right: 1px solid var(--border); padding: 30px; backdrop-filter: blur(20px); position: sticky; top: 0; height: 100vh; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 8px; transition: 0.3s; cursor: pointer; }
-        .nav-link:hover, .nav-link.active { background: var(--glass); color: white; border-left: 3px solid var(--blue); }
+        /* Sidebar Modern */
+        aside { 
+            width: 300px; background: rgba(3, 7, 18, 0.6); backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border); padding: 40px 25px; position: sticky; top: 0; height: 100vh;
+        }
 
-        /* Main Content */
-        main { flex: 1; padding: 40px 60px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        
-        /* Profile View & Tags */
-        .tag { font-size: 0.7rem; font-weight: 800; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; }
-        .fondator { background: rgba(255, 62, 62, 0.2); color: var(--red); border: 1px solid var(--red); }
-        .admin { background: rgba(245, 158, 11, 0.2); color: var(--gold); border: 1px solid var(--gold); }
-        .vip-diamond { background: rgba(0, 132, 255, 0.2); color: var(--blue); border: 1px solid var(--blue); }
-        .user { background: var(--glass); color: #94a3b8; }
+        .nav-link { 
+            display: flex; align-items: center; gap: 15px; padding: 14px 20px; 
+            border-radius: 15px; color: #94a3b8; text-decoration: none; margin-bottom: 10px; 
+            transition: all 0.3s; cursor: pointer; font-weight: 600;
+        }
+        .nav-link:hover, .nav-link.active { background: var(--blue); color: white; box-shadow: 0 10px 20px rgba(0, 132, 255, 0.2); }
 
-        /* Cards & Forum Sections */
-        .section-card { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 25px; backdrop-filter: blur(10px); }
-        .announcement { border-left: 4px solid var(--blue); background: linear-gradient(90deg, rgba(0, 132, 255, 0.05), transparent); }
-        
-        /* Inputs & Buttons */
-        .search-bar { background: var(--glass); border: 1px solid var(--border); padding: 10px 20px; border-radius: 30px; color: white; width: 300px; outline: none; }
-        .btn-primary { background: var(--blue); border: none; padding: 12px 25px; border-radius: 12px; color: white; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .btn-primary:hover { opacity: 0.8; transform: translateY(-2px); }
-        
-        /* Modal Style for Profile & Apps */
-        #adminArea { display: none; }
-        .app-box { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin-top: 10px; border: 1px solid var(--border); }
-        
-        .hidden { display: none; }
+        /* Main Area */
+        main { flex: 1; padding: 40px 50px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+
+        /* Carduri Animate */
+        .card { 
+            background: var(--glass); border: 1px solid var(--border); border-radius: 25px; 
+            padding: 30px; backdrop-filter: blur(10px); transition: 0.4s; position: relative;
+            overflow: hidden;
+        }
+        .card:hover { transform: translateY(-10px); border-color: var(--blue); background: rgba(255,255,255,0.05); }
+
+        /* TAGS REDESIGN */
+        .tag { font-size: 0.7rem; font-weight: 900; padding: 4px 12px; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .fondator { background: linear-gradient(45deg, #ff4757, #ff6b81); box-shadow: 0 0 15px rgba(255, 71, 87, 0.4); animation: pulseRed 2s infinite; }
+        .admin { background: linear-gradient(45deg, #ffa502, #eccc68); color: black; box-shadow: 0 0 15px rgba(255, 165, 2, 0.4); }
+        .vip { background: linear-gradient(45deg, #2ed573, #7bed9f); color: black; }
+
+        @keyframes pulseRed { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+        /* Modal (Pop-up) */
+        .modal { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .modal-content { 
+            background: #0b0f1a; border: 1px solid var(--border); padding: 40px; 
+            border-radius: 30px; width: 500px; max-width: 90%; position: relative;
+        }
+
+        input, textarea, select {
+            width: 100%; background: #161b22; border: 1px solid var(--border); 
+            padding: 12px; border-radius: 12px; color: white; margin-top: 10px; outline: none;
+        }
+
+        .btn-main { 
+            background: var(--blue); color: white; border: none; padding: 12px 25px; 
+            border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
-<div class="bg-fx"></div>
+<div class="bg-gradient"></div>
 
 <div class="wrapper">
     <aside>
-        <div class="logo" style="font-size: 1.8rem; font-weight: 800; margin-bottom: 40px;">SWIT<span style="color:var(--blue)">RP</span></div>
+        <div style="font-size: 2rem; font-weight: 900; margin-bottom: 50px;">SWIT<span style="color:var(--blue)">RP</span></div>
         <div class="nav-link active" onclick="showTab('home')"><i class="fas fa-home"></i> Acasă</div>
-        <div class="nav-link" onclick="showTab('announcements')"><i class="fas fa-bullhorn"></i> Anunțuri</div>
-        <div class="nav-link" onclick="showTab('applications')"><i class="fas fa-file-signature"></i> Aplicații</div>
-        <div class="nav-link" onclick="showTab('players')"><i class="fas fa-users"></i> Jucători</div>
-        <div id="adminTab" class="nav-link hidden" onclick="showTab('admin')"><i class="fas fa-user-crown" style="color:var(--red)"></i> Administrare</div>
-        
-        <div style="position: absolute; bottom: 30px; width: calc(100% - 60px);">
-            <div id="userProfile" class="hidden">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                    <img id="myAvatar" src="" style="width: 40px; border-radius: 50%;">
-                    <div>
-                        <div id="myUsername" style="font-weight: 700; font-size: 0.9rem;">User</div>
-                        <div id="myTag" class="tag user">User</div>
-                    </div>
-                </div>
-                <button onclick="logout()" style="background: none; border: none; color: #ef4444; font-size: 0.8rem; cursor: pointer;">Deconectare</button>
-            </div>
-            <button id="loginBtn" class="btn-primary" style="width: 100%;" onclick="login()">Login Discord</button>
+        <div class="nav-link" onclick="showTab('shop')"><i class="fas fa-shopping-cart"></i> Shop</div>
+        <div class="nav-link" onclick="showTab('apps')"><i class="fas fa-pen-nib"></i> Aplicații</div>
+        <div class="nav-link" onclick="showTab('players')"><i class="fas fa-search"></i> Căutare Jucători</div>
+        <div id="adminLink" class="nav-link" style="display:none; color:var(--red)" onclick="showTab('admin')"><i class="fas fa-crown"></i> Admin Panel</div>
+
+        <div id="authBox" style="margin-top: auto; padding-top: 20px;">
+            <button class="btn-main" onclick="login()">LOGIN DISCORD</button>
+        </div>
+        <div id="userBox" style="display:none; margin-top: auto; text-align:center;">
+            <img id="myPfp" src="" style="width:60px; border-radius:50%; border: 2px solid var(--blue);">
+            <p id="myName" style="font-weight:800; margin:10px 0;"></p>
+            <div id="myTag" class="tag"></div>
+            <button onclick="logout()" style="background:none; border:none; color:#555; cursor:pointer; margin-top:10px;">Logout</button>
         </div>
     </aside>
 
     <main>
-        <header class="header">
-            <h2 id="tabTitle">Acasă</h2>
-            <input type="text" class="search-bar" placeholder="Caută jucător..." onkeyup="searchPlayers(this.value)">
-        </header>
-
-        <section id="tab-home" class="tab-content">
-            <div class="section-card announcement">
-                <h3><i class="fas fa-star" style="color: var(--gold)"></i> Bine ai venit pe Swit RP!</h3>
-                <p style="color: #94a3b8; margin-top: 10px;">Acesta este noul hub central al comunității. Aici poți aplica pentru facțiuni, poți vedea anunțurile staff-ului și poți interacționa cu ceilalți jucători.</p>
-            </div>
-            <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="section-card">
-                    <h4>Shop Server</h4>
-                    <p style="font-size: 0.8rem; color: #64748b; margin: 10px 0;">Vrei să susții serverul? Vizitează shop-ul nostru pentru beneficii VIP.</p>
-                    <a href="https://tebex.io" target="_blank" class="btn-primary" style="display: inline-block; text-decoration: none; font-size: 0.8rem;">Deschide Shop</a>
+        <section id="tab-home" class="animate__animated animate__fadeIn">
+            <h1>Salut, <span id="welcomeName">Cetățene</span>! 👋</h1>
+            <p style="color:#64748b; margin-top:10px;">Bine ai revenit pe portalul oficial Swit Roleplay.</p>
+            <div class="grid" style="margin-top: 40px;">
+                <div class="card">
+                    <h3>Anunț Server</h3>
+                    <p style="color:#94a3b8; font-size:0.9rem; margin-top:10px;">Sistemul de aplicații este acum online!</p>
                 </div>
             </div>
         </section>
 
-        <section id="tab-announcements" class="tab-content hidden">
-            <div id="announcementsList">
-                <div class="section-card">
-                    <span class="tag admin">System</span>
-                    <h4 style="margin-top: 10px;">Lansarea noului portal</h4>
-                    <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 5px;">Portalul a fost conectat oficial la baza de date Supabase.</p>
+        <section id="tab-shop" style="display:none;" class="animate__animated animate__fadeIn">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h1>Shop Server</h1>
+                <button id="addProdBtn" class="btn-main" style="width:auto; display:none;" onclick="openModal('modal-add-product')">+ Adaugă Produs</button>
+            </div>
+            <div id="shopGrid" class="grid" style="margin-top:30px;"></div>
+        </section>
+
+        <section id="tab-apps" style="display:none;" class="animate__animated animate__fadeIn">
+            <h1>Aplicații Deschise</h1>
+            <div class="grid" style="margin-top:30px;">
+                <div class="card">
+                    <h3>Staff Application</h3>
+                    <button class="btn-main" onclick="openAppForm('staff')">APLICĂ</button>
+                </div>
+                <div class="card">
+                    <h3>Faction Application</h3>
+                    <button class="btn-main" onclick="openAppForm('faction')">APLICĂ</button>
                 </div>
             </div>
         </section>
 
-        <section id="tab-applications" class="tab-content hidden">
-            <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="section-card">
-                    <h4>Staff Application</h4>
-                    <div id="status-staff_apps" style="margin: 10px 0;">Verificare status...</div>
-                    <button id="btn-staff_apps" class="btn-primary" onclick="openApply('staff')">Aplică</button>
-                </div>
-                <div class="section-card">
-                    <h4>Faction Application</h4>
-                    <div id="status-faction_apps" style="margin: 10px 0;">Verificare status...</div>
-                    <button id="btn-faction_apps" class="btn-primary" onclick="openApply('faction')">Aplică</button>
-                </div>
-            </div>
+        <section id="tab-players" style="display:none;" class="animate__animated animate__fadeIn">
+            <h1>Căutare Jucători</h1>
+            <input type="text" placeholder="Caută după nume sau ID..." onkeyup="searchPlayers(this.value)" style="margin-bottom:30px;">
+            <div id="playerResults" class="grid"></div>
         </section>
 
-        <section id="tab-players" class="tab-content hidden">
-            <div id="playersList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
-                </div>
-        </section>
-
-        <section id="tab-admin" class="tab-content hidden">
-            <div class="section-card" style="border-color: var(--red);">
-                <h3 style="color: var(--red);">Control Panel</h3>
-                <div style="margin-top: 20px; display: flex; gap: 10px;">
-                    <button class="btn-primary" onclick="toggleSystem('staff_apps')">Toggle Staff Apps</button>
-                    <button class="btn-primary" onclick="toggleSystem('faction_apps')">Toggle Faction Apps</button>
-                </div>
-            </div>
-            <h3>Aplicații în Așteptare</h3>
-            <div id="adminApps"></div>
+        <section id="tab-admin" style="display:none;" class="animate__animated animate__fadeIn">
+            <h1>Management Aplicații</h1>
+            <div id="adminAppsList" style="margin-top:30px;"></div>
         </section>
     </main>
+</div>
+
+<div id="modal-app" class="modal">
+    <div class="modal-content animate__animated animate__zoomIn">
+        <h2 id="appTitle">Aplică</h2>
+        <div id="appQuestions"></div>
+        <button class="btn-main" onclick="submitApplication()">TRIMITE APLICAȚIA</button>
+        <button onclick="closeModal()" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer;">Anulează</button>
+    </div>
+</div>
+
+<div id="modal-add-product" class="modal">
+    <div class="modal-content">
+        <h2>Adaugă Produs</h2>
+        <input id="p-name" placeholder="Nume Produs">
+        <input id="p-price" placeholder="Preț (ex: 50 RON)">
+        <textarea id="p-desc" placeholder="Descriere produs..."></textarea>
+        <input id="p-img" placeholder="URL Imagine (optional)">
+        <button class="btn-main" onclick="saveProduct()">SALVEAZĂ PRODUS</button>
+        <button onclick="closeModal()" style="margin-top:10px;">Închide</button>
+    </div>
 </div>
 
 <script>
     const S_URL = 'https://xdbdgfnrpglcqsguvcrz.supabase.co';
     const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYmRnZm5ycGdsY3FzZ3V2Y3J6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTc2OTMsImV4cCI6MjA4Nzg3MzY5M30.NWjbjlP2p3wf0XmaEI2HjlgaIR3WNBYhkA5qvquv3aQ';
-    const CLIENT_ID = '1475937365087486022';
     const OWNER_ID = '1444054508484169728';
-
     const sb = supabase.createClient(S_URL, S_KEY);
-    let currentUser = null;
 
-    // --- LOGICA UI ---
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+    let me = null;
+    let currentAppType = '';
+
+    const questions = {
+        staff: ["Câți ani ai?", "De ce vrei în staff?", "Câte ore ai pe server?", "Ai mai fost staff?"],
+        faction: ["În ce facțiune aplici?", "De ce alegi această facțiune?", "Care este istoricul tău FH?"]
+    };
+
+    function showTab(id) {
+        document.querySelectorAll('main > section').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById('tab-' + tabId).classList.remove('hidden');
-        document.getElementById('tabTitle').innerText = tabId.charAt(0).toUpperCase() + tabId.slice(1);
-        if(tabId === 'players') loadAllPlayers();
-        if(tabId === 'admin') loadPendingApps();
+        document.getElementById('tab-' + id).style.display = 'block';
+        event?.currentTarget?.classList.add('active');
+        if(id === 'shop') loadShop();
+        if(id === 'admin') loadAdminApps();
     }
 
     // --- AUTH ---
-    function login() {
-        window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}&response_type=token&scope=identify`;
-    }
-
-    function logout() {
-        localStorage.removeItem('discord_token');
-        location.reload();
-    }
-
     async function checkAuth() {
-        let token = localStorage.getItem('discord_token');
-        const hash = new URLSearchParams(window.location.hash.slice(1));
-        if(hash.get('access_token')) {
-            token = hash.get('access_token');
-            localStorage.setItem('discord_token', token);
-            window.history.replaceState({}, document.title, "/");
-        }
-
+        const token = localStorage.getItem('token') || new URLSearchParams(window.location.hash.slice(1)).get('access_token');
         if(token) {
+            localStorage.setItem('token', token);
+            window.history.replaceState({}, "", "/");
             const r = await fetch('https://discord.com/api/users/@me', { headers: { authorization: `Bearer ${token}` } });
-            if(r.ok) {
-                currentUser = await r.json();
-                updateUserUI();
-            } else {
-                localStorage.removeItem('discord_token');
-            }
+            me = await r.json();
+            updateUI();
         }
     }
 
-    async function updateUserUI() {
-        document.getElementById('loginBtn').classList.add('hidden');
-        document.getElementById('userProfile').classList.remove('hidden');
-        
-        // Luam datele din DB pentru rank
-        const { data } = await sb.from('profiles').select('*').eq('discord_id', currentUser.id).single();
-        let rank = data?.rank || 'User';
-        
-        // Auto-Fondator
-        if(currentUser.id === OWNER_ID) {
-            rank = 'Fondator';
-            document.getElementById('adminTab').classList.remove('hidden');
-        }
+    function updateUI() {
+        document.getElementById('authBox').style.display = 'none';
+        document.getElementById('userBox').style.display = 'block';
+        document.getElementById('myPfp').src = `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png`;
+        document.getElementById('myName').innerText = me.username;
+        document.getElementById('welcomeName').innerText = me.username;
 
-        document.getElementById('myUsername').innerText = currentUser.username;
-        document.getElementById('myAvatar').src = `https://cdn.discordapp.com/avatars/${currentUser.id}/${currentUser.avatar}.png`;
+        let rank = (me.id === OWNER_ID) ? 'Fondator' : 'User';
         const tag = document.getElementById('myTag');
         tag.innerText = rank;
-        tag.className = 'tag ' + rank.toLowerCase().replace(' ', '-');
+        tag.className = 'tag ' + rank.toLowerCase();
 
-        // Sincronizam cu DB
-        await sb.from('profiles').upsert({ 
-            discord_id: currentUser.id, 
-            username: currentUser.username, 
-            avatar: `https://cdn.discordapp.com/avatars/${currentUser.id}/${currentUser.avatar}.png`,
-            rank: rank
-        }, { onConflict: 'discord_id' });
-    }
-
-    // --- DB ACTIONS ---
-    async function loadSettings() {
-        const { data } = await sb.from('server_settings').select('*');
-        data.forEach(s => {
-            const btn = document.getElementById('btn-' + s.id);
-            const status = document.getElementById('status-' + s.id);
-            if(s.is_open) {
-                status.innerHTML = `<span style="color:var(--green)">● Deschise</span>`;
-                btn.disabled = false; btn.className = 'btn-primary';
-            } else {
-                status.innerHTML = `<span style="color:var(--red)">● Închise</span>`;
-                btn.disabled = true; btn.className = 'btn-primary user';
-            }
-        });
-    }
-
-    async function toggleSystem(id) {
-        const { data } = await sb.from('server_settings').select('is_open').eq('id', id).single();
-        await sb.from('server_settings').update({ is_open: !data.is_open }).eq('id', id);
-        loadSettings();
-    }
-
-    async function openApply(type) {
-        if(!currentUser) return alert("Loghează-te!");
-        const content = prompt(`Introdu aplicația ta pentru ${type}:`);
-        if(content) {
-            await sb.from('applications').insert({ discord_id: currentUser.id, username: currentUser.username, type: type, content: content });
-            alert("Trimisă!");
+        if(me.id === OWNER_ID) {
+            document.getElementById('adminLink').style.display = 'flex';
+            document.getElementById('addProdBtn').style.display = 'block';
         }
     }
 
-    async function loadPendingApps() {
-        const { data } = await sb.from('applications').select('*').eq('status', 'pending');
-        const container = document.getElementById('adminApps');
-        container.innerHTML = '';
-        data.forEach(a => {
-            container.innerHTML += `
-                <div class="app-box">
-                    <b>${a.username}</b> aplică pentru <b>${a.type}</b><br>
-                    <p style="font-size:0.8rem; color:#aaa; margin:10px 0;">${a.content}</p>
-                    <button onclick="handleApp('${a.id}', 'accepted')" style="color:var(--green); background:none; border:none; cursor:pointer;">Acceptă</button> | 
-                    <button onclick="handleApp('${a.id}', 'rejected')" style="color:var(--red); background:none; border:none; cursor:pointer;">Respinge</button>
-                </div>`;
+    // --- SHOP ---
+    async function saveProduct() {
+        await sb.from('shop_products').insert({
+            name: document.getElementById('p-name').value,
+            price: document.getElementById('p-price').value,
+            description: document.getElementById('p-desc').value,
+            image_url: document.getElementById('p-img').value
         });
+        closeModal();
+        loadShop();
     }
 
-    async function handleApp(id, status) {
-        await sb.from('applications').update({ status: status }).eq('id', id);
-        loadPendingApps();
-    }
-
-    async function loadAllPlayers() {
-        const { data } = await sb.from('profiles').select('*').limit(20);
-        const container = document.getElementById('playersList');
-        container.innerHTML = '';
+    async function loadShop() {
+        const { data } = await sb.from('shop_products').select('*');
+        const grid = document.getElementById('shopGrid');
+        grid.innerHTML = '';
         data.forEach(p => {
-            container.innerHTML += `
-                <div class="section-card" style="text-align:center; padding: 15px;">
-                    <img src="${p.avatar}" style="width:60px; border-radius:50%; margin-bottom:10px;">
-                    <div style="font-weight:700; font-size:0.8rem;">${p.username}</div>
-                    <div class="tag ${p.rank.toLowerCase().replace(' ', '-')}">${p.rank}</div>
+            grid.innerHTML += `
+                <div class="card">
+                    <img src="${p.image_url || 'https://via.placeholder.com/150'}" style="width:100%; border-radius:15px; margin-bottom:15px;">
+                    <h3>${p.name}</h3>
+                    <p style="color:#aaa; font-size:0.8rem;">${p.description}</p>
+                    <div style="margin-top:15px; font-weight:900; color:var(--blue)">${p.price}</div>
+                    <button class="btn-main">CUMPĂRĂ</button>
                 </div>`;
         });
     }
 
+    // --- APLICATII ---
+    function openAppForm(type) {
+        if(!me) return alert("Loghează-te!");
+        currentAppType = type;
+        document.getElementById('appTitle').innerText = "Aplică pentru " + type;
+        const qBox = document.getElementById('appQuestions');
+        qBox.innerHTML = '';
+        questions[type].forEach((q, i) => {
+            qBox.innerHTML += `<p style="margin-top:15px;">${q}</p><textarea id="q-${i}"></textarea>`;
+        });
+        openModal('modal-app');
+    }
+
+    async function submitApplication() {
+        let answers = [];
+        questions[currentAppType].forEach((q, i) => {
+            answers.push(q + ": " + document.getElementById('q-' + i).value);
+        });
+        await sb.from('applications').insert({
+            discord_id: me.id,
+            username: me.username,
+            type: currentAppType,
+            content: answers.join(' | ')
+        });
+        alert("Aplicație trimisă!");
+        closeModal();
+    }
+
+    // --- SEARCH ---
     async function searchPlayers(val) {
         if(val.length < 2) return;
-        showTab('players');
         const { data } = await sb.from('profiles').select('*').ilike('username', `%${val}%`);
-        const container = document.getElementById('playersList');
-        container.innerHTML = '';
+        const res = document.getElementById('playerResults');
+        res.innerHTML = '';
         data.forEach(p => {
-            container.innerHTML += `<div class="section-card" style="text-align:center;">...</div>`; // Acelasi format ca mai sus
+            res.innerHTML += `
+                <div class="card" onclick="alert('Profilul lui ${p.username}')">
+                    <img src="${p.avatar}" style="width:50px; border-radius:50%;">
+                    <h4 style="margin-top:10px;">${p.username}</h4>
+                    <div class="tag ${p.rank.toLowerCase()}">${p.rank}</div>
+                </div>`;
         });
     }
 
-    window.onload = () => {
-        checkAuth();
-        loadSettings();
-    };
+    // --- ADMIN ---
+    async function loadAdminApps() {
+        const { data } = await sb.from('applications').select('*').eq('status', 'pending');
+        const list = document.getElementById('adminAppsList');
+        list.innerHTML = '';
+        data.forEach(a => {
+            list.innerHTML += `
+                <div class="card" style="margin-bottom:15px;">
+                    <h4>${a.username} (${a.type})</h4>
+                    <p style="font-size:0.8rem; color:#888; margin:10px 0;">${a.content}</p>
+                    <button onclick="decide('${a.id}', 'accepted')" style="color:var(--green); background:none; border:none; cursor:pointer;">ACCEPTĂ</button>
+                    <button onclick="decide('${a.id}', 'rejected')" style="color:var(--red); background:none; border:none; cursor:pointer; margin-left:20px;">RESPINGE</button>
+                </div>`;
+        });
+    }
+
+    async function decide(id, status) {
+        await sb.from('applications').update({ status }).eq('id', id);
+        loadAdminApps();
+    }
+
+    // --- HELPERS ---
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+    function login() { window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}&response_type=token&scope=identify`; }
+    function logout() { localStorage.clear(); location.reload(); }
+
+    window.onload = checkAuth;
 </script>
 </body>
 </html>
