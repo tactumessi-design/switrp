@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swit RP | Database Integrated</title>
+    <title>Swit RP | Community Portal</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -18,188 +18,166 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg); color: white; line-height: 1.6; }
+        body { background: var(--bg); color: white; overflow-x: hidden; }
 
-        /* Background FX */
-        .bg-glow {
+        /* Fundal */
+        .background-effect {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% -20%, #003366, transparent);
+            background: radial-gradient(circle at 50% -20%, #003366, transparent), #020617;
             z-index: -1;
         }
 
-        /* Navbar */
+        /* Navigatie */
         nav {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 6%; background: rgba(2, 6, 23, 0.8);
-            backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+            padding: 15px 5%; background: rgba(2, 6, 23, 0.7);
+            backdrop-filter: blur(15px); border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 1000;
         }
 
-        .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: -1px; }
+        .logo { font-size: 1.5rem; font-weight: 800; }
         .logo span { color: var(--blue); }
 
-        /* Search Box */
-        .search-container { position: relative; width: 300px; }
-        .search-input {
+        /* Bara de cautare */
+        .search-box { position: relative; width: 280px; }
+        .search-box input {
             width: 100%; background: var(--glass); border: 1px solid var(--border);
-            padding: 10px 15px 10px 40px; border-radius: 12px; color: white; outline: none;
+            padding: 10px 15px 10px 35px; border-radius: 12px; color: white; outline: none;
+        }
+        .search-box i { position: absolute; left: 12px; top: 12px; color: #64748b; }
+
+        #results {
+            position: absolute; top: 50px; width: 100%; background: #0f172a;
+            border: 1px solid var(--border); border-radius: 10px; display: none;
+        }
+        .user-item { padding: 10px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+
+        /* Butoane & Profil */
+        .auth-zone { display: flex; align-items: center; gap: 15px; }
+        .btn-discord { background: #5865F2; padding: 8px 18px; border-radius: 10px; color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .user-chip { display: none; align-items: center; gap: 10px; background: var(--glass); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); }
+        .user-chip img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--blue); }
+
+        /* Hero & Cards */
+        .hero { text-align: center; padding: 80px 5%; }
+        .hero h1 { font-size: 4rem; font-weight: 800; margin-bottom: 15px; }
+        
+        .main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; padding: 40px 5%; }
+        .card { 
+            background: var(--glass); border: 1px solid var(--border); padding: 35px; 
+            border-radius: 20px; text-align: center; backdrop-filter: blur(10px);
             transition: 0.3s;
         }
-        .search-input:focus { border-color: var(--blue); background: rgba(255,255,255,0.07); }
-        .search-icon { position: absolute; left: 15px; top: 12px; color: #64748b; }
-
-        #search-results {
-            position: absolute; top: 55px; width: 100%; background: #0f172a;
-            border: 1px solid var(--border); border-radius: 12px; display: none; overflow: hidden;
-        }
-        .user-row { padding: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s; }
-        .user-row:hover { background: var(--blue); }
-
-        /* Auth/Profile */
-        .auth-box { display: flex; align-items: center; gap: 15px; }
-        .btn-discord {
-            background: #5865F2; padding: 10px 22px; border-radius: 10px;
-            color: white; text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 8px;
-        }
-        .profile-chip { display: none; align-items: center; gap: 10px; background: var(--glass); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--border); }
-        .profile-chip img { width: 32px; height: 32px; border-radius: 50%; }
-
-        /* Hero */
-        .hero { padding: 100px 6%; text-align: center; }
-        .hero h1 { font-size: 4.5rem; font-weight: 800; margin-bottom: 20px; }
-        .hero p { color: #94a3b8; font-size: 1.2rem; max-width: 600px; margin: 0 auto 40px; }
-
-        /* Grid System */
-        .main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; padding: 0 6% 100px; }
-        .glass-card {
-            background: var(--glass); border: 1px solid var(--border); border-radius: 24px;
-            padding: 40px; backdrop-filter: blur(10px); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .glass-card:hover { transform: translateY(-10px); border-color: var(--blue); box-shadow: 0 20px 40px rgba(0,132,255,0.1); }
+        .card:hover { border-color: var(--blue); transform: translateY(-5px); }
+        .card i { font-size: 2.5rem; color: var(--blue); margin-bottom: 20px; }
         
-        .btn-main {
-            display: block; text-align: center; background: var(--blue); color: white;
-            padding: 14px; border-radius: 14px; text-decoration: none; font-weight: 700; margin-top: 25px;
+        .btn-action { 
+            display: inline-block; width: 100%; background: var(--blue); 
+            color: white; padding: 12px; border-radius: 10px; text-decoration: none; 
+            font-weight: 700; margin-top: 20px;
         }
-
-        .icon-box { width: 60px; height: 60px; background: rgba(0, 132, 255, 0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--blue); margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-<div class="bg-glow"></div>
+<div class="background-effect"></div>
 
 <nav>
-    <div class="logo">SWIT<span>RP</span></div>
+    <div class="logo">SWIT <span>RP</span></div>
     
-    <div class="search-container">
-        <i class="fas fa-search search-icon"></i>
-        <input type="text" class="search-input" id="searchBar" placeholder="Caută cetățeni..." onkeyup="searchUsers()">
-        <div id="search-results"></div>
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInp" placeholder="Caută jucători..." onkeyup="doSearch()">
+        <div id="results"></div>
     </div>
 
-    <div class="auth-box">
-        <a href="#" id="loginBtn" class="btn-discord" onclick="authDiscord()"><i class="fab fa-discord"></i> Login</a>
-        <div class="profile-chip" id="profileBox">
-            <img src="" id="pfp" alt="">
-            <span id="usernameDisplay">User</span>
+    <div class="auth-zone">
+        <a href="#" id="loginBtn" class="btn-discord" onclick="login()"><i class="fab fa-discord"></i> Login</a>
+        <div class="user-chip" id="userBox">
+            <img src="" id="userImg">
+            <span id="userName">User</span>
         </div>
     </div>
 </nav>
 
 <header class="hero">
     <h1>SWIT <span style="color:var(--blue)">ROLEPLAY</span></h1>
-    <p>O comunitate definită prin seriozitate și sisteme unice. Intră acum în cea mai mare familie de FiveM.</p>
-    <a href="fivem://connect/IP_SERVER" class="btn-main" style="width: 250px; margin: 0 auto; font-size: 1.1rem;">CONECTEAZĂ-TE</a>
+    <p>Comunitatea ta de FiveM, acum cu un portal complet integrat.</p>
 </header>
 
 <div class="main-grid">
-    <div class="glass-card">
-        <div class="icon-box"><i class="fas fa-shopping-basket"></i></div>
-        <h3>Premium Shop</h3>
-        <p>Achiziționează pachete VIP, mașini de import sau proprietăți exclusiviste pentru personajul tău.</p>
-        <a href="https://tebex.io" class="btn-main">ACCESEAZĂ SHOP</a>
+    <div class="card">
+        <i class="fas fa-shopping-cart"></i>
+        <h3>Shop Server</h3>
+        <p>Mașini VIP și pachete de monede pentru server.</p>
+        <a href="#" class="btn-action">Deschide Shop</a>
     </div>
 
-    <div class="glass-card">
-        <div class="icon-box"><i class="fas fa-shield-halved"></i></div>
-        <h3>Aplicații Staff</h3>
-        <p>Te consideri capabil să ajuți comunitatea? Aplică pentru un loc în echipa noastră administrativă.</p>
-        <a href="#" class="btn-main" style="background: rgba(255,255,255,0.05);">TRIMITE APLICAȚIE</a>
+    <div class="card">
+        <i class="fas fa-user-shield"></i>
+        <h3>Aplicare Staff</h3>
+        <p>Vrei să faci parte din echipa Swit RP?</p>
+        <a href="#" class="btn-action" style="background: rgba(255,255,255,0.05);">Aplică acum</a>
     </div>
 
-    <div class="glass-card">
-        <div class="icon-box"><i class="fas fa-building-columns"></i></div>
-        <h3>Facțiuni Guvernamentale</h3>
-        <p>Aplică pentru LSPD, SMURD sau DOJ. Avem nevoie de oameni pregătiți pentru intervenții.</p>
-        <a href="#" class="btn-main" style="background: rgba(255,255,255,0.05);">APLICĂ LA STAT</a>
+    <div class="card">
+        <i class="fas fa-users"></i>
+        <h3>Aplicare Facțiuni</h3>
+        <p>Intră în Poliție, SMURD sau Mafie.</p>
+        <a href="#" class="btn-action" style="background: rgba(255,255,255,0.05);">Aplică acum</a>
     </div>
 </div>
 
 <script>
-    // CONFIGURARE
+    // DATELE TALE INTEGRATE
+    const S_URL = 'https://xdbdgfnrpglcqsguvcrz.supabase.co';
+    const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYmRnZm5ycGdsY3FzZ3V2Y3J6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTc2OTMsImV4cCI6MjA4Nzg3MzY5M30.NWjbjlP2p3wf0XmaEI2HjlgaIR3WNBYhkA5qvquv3aQ';
     const CLIENT_ID = '1475937365087486022';
     const REDIRECT_URI = window.location.origin + window.location.pathname;
-    
-    // CONECTARE SUPABASE (Pune datele tale aici)
-    const SUPABASE_URL = 'URL_UL_TAU_SUPABASE'; 
-    const SUPABASE_KEY = 'CHEIA_TA_ANON_SUPABASE';
-    const supabase = (typeof supabase !== 'undefined') ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-    function authDiscord() {
-        const url = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
-        window.location.href = url;
+    const sb = supabase.createClient(S_URL, S_KEY);
+
+    function login() {
+        window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
     }
 
-    async function syncUserToDB(user) {
-        if(!supabase) return;
-        const { error } = await supabase
-            .from('profiles')
-            .upsert({ 
-                discord_id: user.id, 
-                username: user.username, 
-                avatar: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`,
-                last_seen: new Date()
-            }, { onConflict: 'discord_id' });
-        
-        if(error) console.error("Eroare Supabase:", error);
+    async function sync(user) {
+        await sb.from('profiles').upsert({ 
+            discord_id: user.id, 
+            username: user.username, 
+            avatar: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+        }, { onConflict: 'discord_id' });
     }
 
-    async function searchUsers() {
-        let input = document.getElementById('searchBar').value;
-        let results = document.getElementById('search-results');
-        
-        if(input.length < 2) { results.style.display = 'none'; return; }
+    async function doSearch() {
+        const val = document.getElementById('searchInp').value;
+        const resDiv = document.getElementById('results');
+        if(val.length < 2) { resDiv.style.display = 'none'; return; }
 
-        // Căutare reală în DB
-        if(supabase) {
-            let { data } = await supabase.from('profiles').select('*').ilike('username', `%${input}%`);
-            results.innerHTML = '';
-            if(data && data.length > 0) {
-                results.style.display = 'block';
-                data.forEach(u => {
-                    results.innerHTML += `<div class="user-row"><img src="${u.avatar}" width="25" style="border-radius:50%"> ${u.username}</div>`;
-                });
-            }
+        const { data } = await sb.from('profiles').select('*').ilike('username', `%${val}%`).limit(5);
+        
+        resDiv.innerHTML = '';
+        if(data && data.length > 0) {
+            resDiv.style.display = 'block';
+            data.forEach(u => {
+                resDiv.innerHTML += `<div class="user-item"><img src="${u.avatar}" width="25" style="border-radius:50%"> ${u.username}</div>`;
+            });
         }
     }
 
     window.onload = () => {
-        const params = new URLSearchParams(window.location.hash.slice(1));
-        const token = params.get('access_token');
+        const frag = new URLSearchParams(window.location.hash.slice(1));
+        const token = frag.get('access_token');
 
         if (token) {
-            fetch('https://discord.com/api/users/@me', {
-                headers: { authorization: `Bearer ${token}` }
-            })
-            .then(res => res.json())
-            .then(user => {
+            fetch('https://discord.com/api/users/@me', { headers: { authorization: `Bearer ${token}` } })
+            .then(r => r.json())
+            .then(u => {
                 document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('profileBox').style.display = 'flex';
-                document.getElementById('usernameDisplay').innerText = user.username;
-                document.getElementById('pfp').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-                
-                syncUserToDB(user);
+                document.getElementById('userBox').style.display = 'flex';
+                document.getElementById('userName').innerText = u.username;
+                document.getElementById('userImg').src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png`;
+                sync(u);
                 window.history.replaceState({}, document.title, "/");
             });
         }
