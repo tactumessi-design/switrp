@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swit RP | Official FiveM Server</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --blue-primary: #0084ff;
+            --blue-dark: #001a33;
+            --glass: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-main: #e0e0e0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
+
+        body {
+            background: radial-gradient(circle at center, #001f3f 0%, #000814 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Fundal Animatie */
+        .bg-glow {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://w0.peakpx.com/wallpaper/598/432/HD-wallpaper-gta-v-gta-5-grand-theft-auto-v-games.jpg') no-repeat center center/cover;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        /* Navbar Glass */
+        nav {
+            position: fixed;
+            top: 20px; left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1200px;
+            padding: 15px 30px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo { font-weight: 800; font-size: 1.5rem; letter-spacing: 2px; }
+        .logo span { color: var(--blue-primary); text-shadow: 0 0 10px var(--blue-primary); }
+
+        nav ul { display: flex; list-style: none; gap: 25px; }
+        nav ul a { color: white; text-decoration: none; font-size: 0.9rem; transition: 0.3s; font-weight: 500; }
+        nav ul a:hover { color: var(--blue-primary); }
+
+        .btn-discord {
+            background: #5865F2;
+            padding: 8px 20px;
+            border-radius: 10px;
+            border: none;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+        .btn-discord:hover { background: #4752c4; transform: scale(1.05); }
+
+        /* Hero Section */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        h1 { font-size: 4rem; margin-bottom: 10px; text-transform: uppercase; }
+        .hero-desc { font-size: 1.2rem; color: #aaa; margin-bottom: 30px; }
+
+        /* Main Sections Grid */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 25px;
+            text-align: center;
+            transition: 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: var(--blue-primary);
+            box-shadow: 0 10px 30px rgba(0, 132, 255, 0.2);
+        }
+
+        .card i { font-size: 3rem; color: var(--blue-primary); margin-bottom: 20px; }
+        .card h2 { margin-bottom: 15px; font-size: 1.8rem; }
+        .card p { color: #ccc; margin-bottom: 25px; line-height: 1.6; }
+
+        .btn-action {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--blue-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-action:hover { opacity: 0.8; box-shadow: 0 0 20px var(--blue-primary); }
+
+        footer { text-align: center; padding: 50px; color: #555; font-size: 0.8rem; }
+
+        /* User Profile Style (After Login) */
+        #user-info { display: none; align-items: center; gap: 10px; }
+        #user-avatar { width: 35px; border-radius: 50%; border: 2px solid var(--blue-primary); }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <nav>
+        <div class="logo">SWIT <span>RP</span></div>
+        <ul>
+            <li><a href="#">Acasă</a></li>
+            <li><a href="#shop">Shop</a></li>
+            <li><a href="#apply">Aplicații</a></li>
+        </ul>
+        
+        <div id="login-container">
+            <button class="btn-discord" onclick="loginWithDiscord()">
+                <i class="fab fa-discord"></i> Login
+            </button>
+        </div>
+        <div id="user-info">
+            <img id="user-avatar" src="" alt="Avatar">
+            <span id="user-name"></span>
+        </div>
+    </nav>
+
+    <header>
+        <h1>SWIT <span style="color: var(--blue-primary);">ROLEPLAY</span></h1>
+        <p class="hero-desc">Descoperă un nou nivel de realism pe FiveM.</p>
+        <a href="fivem://connect/IP_SERVER" class="btn-action" style="font-size: 1.2rem; padding: 15px 40px;">JOACĂ ACUM</a>
+    </header>
+
+    <div class="container" id="apply">
+        <div class="grid">
+            <div class="card" id="shop">
+                <i class="fas fa-shopping-cart"></i>
+                <h2>Shop Server</h2>
+                <p>Mașini VIP, Case custom și beneficii Premium pentru a-ți îmbunătăți experiența.</p>
+                <a href="#" class="btn-action">Vezi Magazin</a>
+            </div>
+
+            <div class="card">
+                <i class="fas fa-user-shield"></i>
+                <h2>Aplică Staff</h2>
+                <p>Ai peste 16 ani și vrei să ajuți comunitatea noastră? Te așteptăm în echipă.</p>
+                <a href="#" class="btn-action">Trimite Aplicație</a>
+            </div>
+
+            <div class="card">
+                <i class="fas fa-gun"></i>
+                <h2>Aplică Facțiuni</h2>
+                <p>Luptă pentru dreptate în LSPD sau domină străzile într-o organizație mafiotă.</p>
+                <a href="#" class="btn-action">Alege Facțiune</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Swit RP Community. Design by AI for N1CS203.
+    </footer>
+
+    <script>
+        // CONFIGURARE DISCORD
+        const CLIENT_ID = 'ID_UL_TAU_AICI'; 
+        const REDIRECT_URI = window.location.href.split('#')[0]; // Ia automat URL-ul curent (ex: site-ul tau pe Vercel)
+
+        function loginWithDiscord() {
+            // Daca nu ai CLIENT_ID configurat, doar simulăm pentru demo
+            if(CLIENT_ID === 'ID_UL_TAU_AICI') {
+                alert("Trebuie sa pui CLIENT_ID-ul tau din Discord Developer Portal in cod!");
+                return;
+            }
+            const url = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
+            window.location.href = url;
+        }
+
+        window.onload = () => {
+            const fragment = new URLSearchParams(window.location.hash.slice(1));
+            const accessToken = fragment.get('access_token');
+
+            if (accessToken) {
+                fetch('https://discord.com/api/users/@me', {
+                    headers: { authorization: `Bearer ${accessToken}` }
+                })
+                .then(res => res.json())
+                .then(user => {
+                    // Ascundem butonul de login, afisam info user
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('user-info').style.display = 'flex';
+                    document.getElementById('user-name').innerText = user.username;
+                    document.getElementById('user-avatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+                    
+                    // Curățăm URL-ul de token pentru securitate
+                    window.history.replaceState({}, document.title, "/");
+                })
+                .catch(err => console.error("Eroare login Discord:", err));
+            }
+        };
+    </script>
+</body>
+</html>
