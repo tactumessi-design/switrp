@@ -3,332 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swit RP | Ultimate Portal</title>
-    
+    <title>Swit RP | Advanced Management</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
     <style>
-        :root { 
-            --blue: #0084ff; --bg: #030712; --glass: rgba(255, 255, 255, 0.03); 
-            --border: rgba(255, 255, 255, 0.1); --red: #ff4757; --gold: #ffa502;
+        :root {
+            --blue: #0084ff; --bg: #020617; --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08); --red: #ff4757; --green: #22c55e;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: white; overflow-x: hidden; }
         
-        /* Fundal Animat */
-        .bg-gradient {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 20% 30%, #001f4d 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, #001f4d 0%, transparent 40%);
-            z-index: -1; filter: blur(50px);
-        }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 1.5rem; font-weight: 800; text-decoration: none; color: white; }
+        .logo span { color: var(--blue); }
 
-        .wrapper { display: flex; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+        /* Search Area */
+        .search-box { width: 100%; position: relative; margin-bottom: 40px; }
+        .search-box input { width: 100%; padding: 18px 25px; border-radius: 15px; background: var(--glass); border: 1px solid var(--border); color: white; font-size: 1rem; outline: none; transition: 0.3s; }
+        .search-box input:focus { border-color: var(--blue); box-shadow: 0 0 20px rgba(0, 132, 255, 0.1); }
+
+        /* Grid Jucatori */
+        .players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .player-card { background: var(--glass); border: 1px solid var(--border); padding: 25px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .player-card:hover { transform: translateY(-5px); border-color: var(--blue); }
+        .player-card img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--blue); margin-bottom: 15px; }
+
+        /* Badges */
+        .tag { font-size: 0.7rem; font-weight: 800; padding: 4px 12px; border-radius: 8px; text-transform: uppercase; margin: 3px; display: inline-block; }
+        .fondator { background: var(--red); box-shadow: 0 0 15px rgba(255, 71, 87, 0.3); }
+        .staff { background: var(--green); }
+        .vip { background: #f1c40f; color: black; }
+        .faction { background: var(--blue); }
+
+        /* Modal Profil */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
+        .modal-content { background: #0b0f1a; border: 1px solid var(--border); border-radius: 30px; width: 100%; max-width: 500px; padding: 40px; position: relative; text-align: center; }
+        .admin-section { background: rgba(255, 71, 87, 0.05); border: 1px dashed var(--red); padding: 20px; border-radius: 15px; margin-top: 25px; text-align: left; }
         
-        /* Sidebar Modern */
-        aside { 
-            width: 300px; background: rgba(3, 7, 18, 0.6); backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border); padding: 40px 25px; position: sticky; top: 0; height: 100vh;
-        }
-
-        .nav-link { 
-            display: flex; align-items: center; gap: 15px; padding: 14px 20px; 
-            border-radius: 15px; color: #94a3b8; text-decoration: none; margin-bottom: 10px; 
-            transition: all 0.3s; cursor: pointer; font-weight: 600;
-        }
-        .nav-link:hover, .nav-link.active { background: var(--blue); color: white; box-shadow: 0 10px 20px rgba(0, 132, 255, 0.2); }
-
-        /* Main Area */
-        main { flex: 1; padding: 40px 50px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-
-        /* Carduri Animate */
-        .card { 
-            background: var(--glass); border: 1px solid var(--border); border-radius: 25px; 
-            padding: 30px; backdrop-filter: blur(10px); transition: 0.4s; position: relative;
-            overflow: hidden;
-        }
-        .card:hover { transform: translateY(-10px); border-color: var(--blue); background: rgba(255,255,255,0.05); }
-
-        /* TAGS REDESIGN */
-        .tag { font-size: 0.7rem; font-weight: 900; padding: 4px 12px; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .fondator { background: linear-gradient(45deg, #ff4757, #ff6b81); box-shadow: 0 0 15px rgba(255, 71, 87, 0.4); animation: pulseRed 2s infinite; }
-        .admin { background: linear-gradient(45deg, #ffa502, #eccc68); color: black; box-shadow: 0 0 15px rgba(255, 165, 2, 0.4); }
-        .vip { background: linear-gradient(45deg, #2ed573, #7bed9f); color: black; }
-
-        @keyframes pulseRed { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-
-        /* Modal (Pop-up) */
-        .modal { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-            display: none; justify-content: center; align-items: center; z-index: 2000;
-        }
-        .modal-content { 
-            background: #0b0f1a; border: 1px solid var(--border); padding: 40px; 
-            border-radius: 30px; width: 500px; max-width: 90%; position: relative;
-        }
-
-        input, textarea, select {
-            width: 100%; background: #161b22; border: 1px solid var(--border); 
-            padding: 12px; border-radius: 12px; color: white; margin-top: 10px; outline: none;
-        }
-
-        .btn-main { 
-            background: var(--blue); color: white; border: none; padding: 12px 25px; 
-            border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 20px;
-        }
+        .btn-discord { background: #5865F2; color: white; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; }
+        .btn-discord:hover { opacity: 0.9; transform: translateY(-2px); }
+        
+        textarea { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; color: white; padding: 10px; margin-top: 10px; resize: none; }
     </style>
 </head>
 <body>
 
-<div class="bg-gradient"></div>
-
-<div class="wrapper">
-    <aside>
-        <div style="font-size: 2rem; font-weight: 900; margin-bottom: 50px;">SWIT<span style="color:var(--blue)">RP</span></div>
-        <div class="nav-link active" onclick="showTab('home')"><i class="fas fa-home"></i> Acasă</div>
-        <div class="nav-link" onclick="showTab('shop')"><i class="fas fa-shopping-cart"></i> Shop</div>
-        <div class="nav-link" onclick="showTab('apps')"><i class="fas fa-pen-nib"></i> Aplicații</div>
-        <div class="nav-link" onclick="showTab('players')"><i class="fas fa-search"></i> Căutare Jucători</div>
-        <div id="adminLink" class="nav-link" style="display:none; color:var(--red)" onclick="showTab('admin')"><i class="fas fa-crown"></i> Admin Panel</div>
-
-        <div id="authBox" style="margin-top: auto; padding-top: 20px;">
-            <button class="btn-main" onclick="login()">LOGIN DISCORD</button>
-        </div>
-        <div id="userBox" style="display:none; margin-top: auto; text-align:center;">
-            <img id="myPfp" src="" style="width:60px; border-radius:50%; border: 2px solid var(--blue);">
-            <p id="myName" style="font-weight:800; margin:10px 0;"></p>
-            <div id="myTag" class="tag"></div>
-            <button onclick="logout()" style="background:none; border:none; color:#555; cursor:pointer; margin-top:10px;">Logout</button>
-        </div>
-    </aside>
-
-    <main>
-        <section id="tab-home" class="animate__animated animate__fadeIn">
-            <h1>Salut, <span id="welcomeName">Cetățene</span>! 👋</h1>
-            <p style="color:#64748b; margin-top:10px;">Bine ai revenit pe portalul oficial Swit Roleplay.</p>
-            <div class="grid" style="margin-top: 40px;">
-                <div class="card">
-                    <h3>Anunț Server</h3>
-                    <p style="color:#94a3b8; font-size:0.9rem; margin-top:10px;">Sistemul de aplicații este acum online!</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="tab-shop" style="display:none;" class="animate__animated animate__fadeIn">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h1>Shop Server</h1>
-                <button id="addProdBtn" class="btn-main" style="width:auto; display:none;" onclick="openModal('modal-add-product')">+ Adaugă Produs</button>
-            </div>
-            <div id="shopGrid" class="grid" style="margin-top:30px;"></div>
-        </section>
-
-        <section id="tab-apps" style="display:none;" class="animate__animated animate__fadeIn">
-            <h1>Aplicații Deschise</h1>
-            <div class="grid" style="margin-top:30px;">
-                <div class="card">
-                    <h3>Staff Application</h3>
-                    <button class="btn-main" onclick="openAppForm('staff')">APLICĂ</button>
-                </div>
-                <div class="card">
-                    <h3>Faction Application</h3>
-                    <button class="btn-main" onclick="openAppForm('faction')">APLICĂ</button>
-                </div>
-            </div>
-        </section>
-
-        <section id="tab-players" style="display:none;" class="animate__animated animate__fadeIn">
-            <h1>Căutare Jucători</h1>
-            <input type="text" placeholder="Caută după nume sau ID..." onkeyup="searchPlayers(this.value)" style="margin-bottom:30px;">
-            <div id="playerResults" class="grid"></div>
-        </section>
-
-        <section id="tab-admin" style="display:none;" class="animate__animated animate__fadeIn">
-            <h1>Management Aplicații</h1>
-            <div id="adminAppsList" style="margin-top:30px;"></div>
-        </section>
-    </main>
-</div>
-
-<div id="modal-app" class="modal">
-    <div class="modal-content animate__animated animate__zoomIn">
-        <h2 id="appTitle">Aplică</h2>
-        <div id="appQuestions"></div>
-        <button class="btn-main" onclick="submitApplication()">TRIMITE APLICAȚIA</button>
-        <button onclick="closeModal()" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer;">Anulează</button>
+<nav class="nav">
+    <a href="#" class="logo">SWIT <span>RP</span></a>
+    <div id="authArea">
+        <button class="btn-discord" onclick="login()">LOGIN DISCORD</button>
     </div>
+</nav>
+
+<div class="container">
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Caută jucător după numele de Discord..." onkeyup="searchPlayers(this.value)">
+    </div>
+
+    <div class="players-grid" id="playersGrid">
+        </div>
 </div>
 
-<div id="modal-add-product" class="modal">
+<div id="profileModal" class="modal" onclick="if(event.target == this) closeModal()">
     <div class="modal-content">
-        <h2>Adaugă Produs</h2>
-        <input id="p-name" placeholder="Nume Produs">
-        <input id="p-price" placeholder="Preț (ex: 50 RON)">
-        <textarea id="p-desc" placeholder="Descriere produs..."></textarea>
-        <input id="p-img" placeholder="URL Imagine (optional)">
-        <button class="btn-main" onclick="saveProduct()">SALVEAZĂ PRODUS</button>
-        <button onclick="closeModal()" style="margin-top:10px;">Închide</button>
+        <img id="p-avatar" src="" style="width: 120px; border-radius: 50%; border: 4px solid var(--blue); margin-bottom: 20px;">
+        <h2 id="p-username">Nume</h2>
+        <p id="p-id" style="color: #64748b; font-size: 0.8rem; margin-bottom: 15px;">ID: 0</p>
+        
+        <div id="p-tags"></div>
+
+        <div id="adminPanel" class="admin-section" style="display: none;">
+            <p style="color: var(--red); font-weight: 800; margin-bottom: 10px; font-size: 0.7rem;">ADMINISTRATOR ACCESS</p>
+            <p><strong>IP:</strong> <span id="p-ip">0.0.0.0</span></p>
+            <p><strong>HWID:</strong> <span id="p-hwid">N/A</span></p>
+            <p><strong>Conturi:</strong> <span id="p-accounts">Nespecificat</span></p>
+            <p style="margin-top: 15px;"><strong>Notiță Staff:</strong></p>
+            <textarea id="p-note" rows="3"></textarea>
+            <button onclick="saveAdminNote()" style="width: 100%; padding: 10px; background: var(--red); border: none; border-radius: 8px; color: white; font-weight: 700; margin-top: 10px; cursor: pointer;">SALVEAZĂ NOTIȚĂ</button>
+        </div>
     </div>
 </div>
 
 <script>
     const S_URL = 'https://xdbdgfnrpglcqsguvcrz.supabase.co';
-    const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYmRnZm5ycGdsY3FzZ3V2Y3J6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTc2OTMsImV4cCI6MjA4Nzg3MzY5M30.NWjbjlP2p3wf0XmaEI2HjlgaIR3WNBYhkA5qvquv3aQ';
+    const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Pune cheia ta întreagă aici
+    const CLIENT_ID = '1475937365087486022';
     const OWNER_ID = '1444054508484169728';
+
     const sb = supabase.createClient(S_URL, S_KEY);
-
     let me = null;
-    let currentAppType = '';
+    let selectedPlayerId = null;
 
-    const questions = {
-        staff: ["Câți ani ai?", "De ce vrei în staff?", "Câte ore ai pe server?", "Ai mai fost staff?"],
-        faction: ["În ce facțiune aplici?", "De ce alegi această facțiune?", "Care este istoricul tău FH?"]
-    };
-
-    function showTab(id) {
-        document.querySelectorAll('main > section').forEach(s => s.style.display = 'none');
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById('tab-' + id).style.display = 'block';
-        event?.currentTarget?.classList.add('active');
-        if(id === 'shop') loadShop();
-        if(id === 'admin') loadAdminApps();
+    // --- AUTH LOGIC ---
+    function login() {
+        const redirect = encodeURIComponent(window.location.origin + window.location.pathname);
+        window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${redirect}&response_type=token&scope=identify`;
     }
 
-    // --- AUTH ---
-    async function checkAuth() {
-        const token = localStorage.getItem('token') || new URLSearchParams(window.location.hash.slice(1)).get('access_token');
-        if(token) {
-            localStorage.setItem('token', token);
-            window.history.replaceState({}, "", "/");
+    async function checkUser() {
+        const hash = new URLSearchParams(window.location.hash.slice(1));
+        let token = hash.get('access_token') || localStorage.getItem('d_token');
+
+        if (token) {
+            localStorage.setItem('d_token', token);
+            window.history.replaceState({}, document.title, "/");
+            
             const r = await fetch('https://discord.com/api/users/@me', { headers: { authorization: `Bearer ${token}` } });
-            me = await r.json();
-            updateUI();
+            if (r.ok) {
+                me = await r.json();
+                document.getElementById('authArea').innerHTML = `<span style="font-weight:700">${me.username}</span>`;
+                
+                // Luăm IP-ul automat
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+
+                await sb.from('profiles').upsert({
+                    discord_id: me.id,
+                    username: me.username,
+                    avatar: `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png`,
+                    ip_address: ipData.ip,
+                    rank: (me.id === OWNER_ID) ? 'Fondator' : 'User'
+                }, { onConflict: 'discord_id' });
+            }
         }
     }
 
-    function updateUI() {
-        document.getElementById('authBox').style.display = 'none';
-        document.getElementById('userBox').style.display = 'block';
-        document.getElementById('myPfp').src = `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png`;
-        document.getElementById('myName').innerText = me.username;
-        document.getElementById('welcomeName').innerText = me.username;
-
-        let rank = (me.id === OWNER_ID) ? 'Fondator' : 'User';
-        const tag = document.getElementById('myTag');
-        tag.innerText = rank;
-        tag.className = 'tag ' + rank.toLowerCase();
-
-        if(me.id === OWNER_ID) {
-            document.getElementById('adminLink').style.display = 'flex';
-            document.getElementById('addProdBtn').style.display = 'block';
-        }
-    }
-
-    // --- SHOP ---
-    async function saveProduct() {
-        await sb.from('shop_products').insert({
-            name: document.getElementById('p-name').value,
-            price: document.getElementById('p-price').value,
-            description: document.getElementById('p-desc').value,
-            image_url: document.getElementById('p-img').value
-        });
-        closeModal();
-        loadShop();
-    }
-
-    async function loadShop() {
-        const { data } = await sb.from('shop_products').select('*');
-        const grid = document.getElementById('shopGrid');
+    // --- PLAYERS LOGIC ---
+    async function searchPlayers(val) {
+        if (val.length < 2) return;
+        const { data } = await sb.from('profiles').select('*').ilike('username', `%${val}%`);
+        const grid = document.getElementById('playersGrid');
         grid.innerHTML = '';
         data.forEach(p => {
             grid.innerHTML += `
-                <div class="card">
-                    <img src="${p.image_url || 'https://via.placeholder.com/150'}" style="width:100%; border-radius:15px; margin-bottom:15px;">
-                    <h3>${p.name}</h3>
-                    <p style="color:#aaa; font-size:0.8rem;">${p.description}</p>
-                    <div style="margin-top:15px; font-weight:900; color:var(--blue)">${p.price}</div>
-                    <button class="btn-main">CUMPĂRĂ</button>
-                </div>`;
-        });
-    }
-
-    // --- APLICATII ---
-    function openAppForm(type) {
-        if(!me) return alert("Loghează-te!");
-        currentAppType = type;
-        document.getElementById('appTitle').innerText = "Aplică pentru " + type;
-        const qBox = document.getElementById('appQuestions');
-        qBox.innerHTML = '';
-        questions[type].forEach((q, i) => {
-            qBox.innerHTML += `<p style="margin-top:15px;">${q}</p><textarea id="q-${i}"></textarea>`;
-        });
-        openModal('modal-app');
-    }
-
-    async function submitApplication() {
-        let answers = [];
-        questions[currentAppType].forEach((q, i) => {
-            answers.push(q + ": " + document.getElementById('q-' + i).value);
-        });
-        await sb.from('applications').insert({
-            discord_id: me.id,
-            username: me.username,
-            type: currentAppType,
-            content: answers.join(' | ')
-        });
-        alert("Aplicație trimisă!");
-        closeModal();
-    }
-
-    // --- SEARCH ---
-    async function searchPlayers(val) {
-        if(val.length < 2) return;
-        const { data } = await sb.from('profiles').select('*').ilike('username', `%${val}%`);
-        const res = document.getElementById('playerResults');
-        res.innerHTML = '';
-        data.forEach(p => {
-            res.innerHTML += `
-                <div class="card" onclick="alert('Profilul lui ${p.username}')">
-                    <img src="${p.avatar}" style="width:50px; border-radius:50%;">
-                    <h4 style="margin-top:10px;">${p.username}</h4>
+                <div class="player-card" onclick="viewProfile('${p.discord_id}')">
+                    <img src="${p.avatar}">
+                    <h3>${p.username}</h3>
                     <div class="tag ${p.rank.toLowerCase()}">${p.rank}</div>
                 </div>`;
         });
     }
 
-    // --- ADMIN ---
-    async function loadAdminApps() {
-        const { data } = await sb.from('applications').select('*').eq('status', 'pending');
-        const list = document.getElementById('adminAppsList');
-        list.innerHTML = '';
-        data.forEach(a => {
-            list.innerHTML += `
-                <div class="card" style="margin-bottom:15px;">
-                    <h4>${a.username} (${a.type})</h4>
-                    <p style="font-size:0.8rem; color:#888; margin:10px 0;">${a.content}</p>
-                    <button onclick="decide('${a.id}', 'accepted')" style="color:var(--green); background:none; border:none; cursor:pointer;">ACCEPTĂ</button>
-                    <button onclick="decide('${a.id}', 'rejected')" style="color:var(--red); background:none; border:none; cursor:pointer; margin-left:20px;">RESPINGE</button>
-                </div>`;
-        });
+    async function viewProfile(id) {
+        selectedPlayerId = id;
+        const { data: p } = await sb.from('profiles').select('*').eq('discord_id', id).single();
+        
+        document.getElementById('p-avatar').src = p.avatar;
+        document.getElementById('p-username').innerText = p.username;
+        document.getElementById('p-id').innerText = "DISCORD ID: " + p.discord_id;
+        
+        const tags = document.getElementById('p-tags');
+        tags.innerHTML = `<span class="tag ${p.rank.toLowerCase()}">${p.rank}</span>`;
+        if(p.faction) tags.innerHTML += `<span class="tag faction">${p.faction}</span>`;
+
+        // Vizibilitate Fondator
+        const adminPanel = document.getElementById('adminPanel');
+        if (me && me.id === OWNER_ID) {
+            adminPanel.style.display = 'block';
+            document.getElementById('p-ip').innerText = p.ip_address || 'Necunoscut';
+            document.getElementById('p-hwid').innerText = p.hwid || 'N/A';
+            document.getElementById('p-accounts').innerText = p.linked_accounts || 'Niciunul';
+            document.getElementById('p-note').value = p.admin_note || '';
+        } else {
+            adminPanel.style.display = 'none';
+        }
+
+        document.getElementById('profileModal').style.display = 'flex';
     }
 
-    async function decide(id, status) {
-        await sb.from('applications').update({ status }).eq('id', id);
-        loadAdminApps();
+    async function saveAdminNote() {
+        const note = document.getElementById('p-note').value;
+        await sb.from('profiles').update({ admin_note: note }).eq('discord_id', selectedPlayerId);
+        alert("Notiță salvată cu succes!");
     }
 
-    // --- HELPERS ---
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-    function login() { window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}&response_type=token&scope=identify`; }
-    function logout() { localStorage.clear(); location.reload(); }
+    function closeModal() { document.getElementById('profileModal').style.display = 'none'; }
 
-    window.onload = checkAuth;
+    window.onload = checkUser;
 </script>
 </body>
 </html>
