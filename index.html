@@ -3,103 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swit RP | Management Portal</title>
+    <title>Swit RP | Community Hub</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { 
-            --blue: #0084ff; --bg: #020617; --glass: rgba(255, 255, 255, 0.03); 
-            --border: rgba(255, 255, 255, 0.08); --red: #ef4444; --green: #22c55e;
+            --blue: #0084ff; --bg: #050a18; --glass: rgba(255, 255, 255, 0.03); 
+            --border: rgba(255, 255, 255, 0.08); --red: #ff3e3e; --green: #10b981;
+            --gold: #f59e0b; --purple: #a855f7;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: white; overflow-x: hidden; }
-        .bg-fx { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% -20%, #003366, transparent), #020617; z-index: -1; }
+        .bg-fx { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 0% 0%, #001f4d 0%, transparent 50%), radial-gradient(circle at 100% 100%, #001f4d 0%, transparent 50%); z-index: -1; }
         
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-        .logo { font-size: 1.5rem; font-weight: 800; text-decoration: none; color: white; }
-        .logo span { color: var(--blue); }
-
-        .container { max-width: 1200px; margin: 40px auto; padding: 20px; }
+        /* Layout Forum Style */
+        .wrapper { display: flex; min-height: 100vh; }
         
-        /* Admin Panel */
-        #adminPanel { display: none; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 30px; border-radius: 24px; margin-bottom: 40px; animation: fadeIn 0.5s ease; }
-        .admin-controls { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-        .admin-btn { padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--glass); color: white; cursor: pointer; transition: 0.3s; }
-        .admin-btn:hover { background: var(--blue); }
+        /* Sidebar */
+        aside { width: 280px; background: rgba(2, 6, 23, 0.8); border-right: 1px solid var(--border); padding: 30px; backdrop-filter: blur(20px); position: sticky; top: 0; height: 100vh; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 12px; color: #94a3b8; text-decoration: none; margin-bottom: 8px; transition: 0.3s; cursor: pointer; }
+        .nav-link:hover, .nav-link.active { background: var(--glass); color: white; border-left: 3px solid var(--blue); }
 
-        /* Grid & Cards */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
-        .card { background: var(--glass); border: 1px solid var(--border); padding: 40px; border-radius: 24px; backdrop-filter: blur(10px); text-align: center; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: var(--blue); }
+        /* Main Content */
+        main { flex: 1; padding: 40px 60px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
         
-        .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 15px; }
-        .status-open { background: rgba(34, 197, 94, 0.1); color: var(--green); border: 1px solid var(--green); }
-        .status-closed { background: rgba(239, 68, 68, 0.1); color: var(--red); border: 1px solid var(--red); }
+        /* Profile View & Tags */
+        .tag { font-size: 0.7rem; font-weight: 800; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; }
+        .fondator { background: rgba(255, 62, 62, 0.2); color: var(--red); border: 1px solid var(--red); }
+        .admin { background: rgba(245, 158, 11, 0.2); color: var(--gold); border: 1px solid var(--gold); }
+        .vip-diamond { background: rgba(0, 132, 255, 0.2); color: var(--blue); border: 1px solid var(--blue); }
+        .user { background: var(--glass); color: #94a3b8; }
 
-        .btn { display: block; width: 100%; padding: 14px; margin-top: 20px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-decoration: none; color: white; transition: 0.3s; }
-        .btn-blue { background: var(--blue); box-shadow: 0 4px 15px rgba(0, 132, 255, 0.3); }
-        .btn-disabled { background: #1e293b; cursor: not-allowed; opacity: 0.6; pointer-events: none; }
-
-        /* Profile & Login */
-        .user-info { display: flex; align-items: center; gap: 12px; background: var(--glass); padding: 6px 15px; border-radius: 14px; border: 1px solid var(--border); }
-        .user-info img { width: 30px; border-radius: 50%; border: 1px solid var(--blue); }
-        .btn-discord { background: #5865F2; padding: 10px 20px; border-radius: 12px; color: white; text-decoration: none; font-weight: 700; }
-
-        .app-item { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; margin-top: 15px; border-left: 4px solid var(--blue); text-align: left; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Cards & Forum Sections */
+        .section-card { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 25px; backdrop-filter: blur(10px); }
+        .announcement { border-left: 4px solid var(--blue); background: linear-gradient(90deg, rgba(0, 132, 255, 0.05), transparent); }
+        
+        /* Inputs & Buttons */
+        .search-bar { background: var(--glass); border: 1px solid var(--border); padding: 10px 20px; border-radius: 30px; color: white; width: 300px; outline: none; }
+        .btn-primary { background: var(--blue); border: none; padding: 12px 25px; border-radius: 12px; color: white; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn-primary:hover { opacity: 0.8; transform: translateY(-2px); }
+        
+        /* Modal Style for Profile & Apps */
+        #adminArea { display: none; }
+        .app-box { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin-top: 10px; border: 1px solid var(--border); }
+        
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="bg-fx"></div>
 
-<nav>
-    <a href="#" class="logo">SWIT <span>RP</span></a>
-    <div id="authZone">
-        <a href="#" class="btn-discord" onclick="login()"><i class="fab fa-discord"></i> Login cu Discord</a>
-    </div>
-</nav>
+<div class="wrapper">
+    <aside>
+        <div class="logo" style="font-size: 1.8rem; font-weight: 800; margin-bottom: 40px;">SWIT<span style="color:var(--blue)">RP</span></div>
+        <div class="nav-link active" onclick="showTab('home')"><i class="fas fa-home"></i> Acasă</div>
+        <div class="nav-link" onclick="showTab('announcements')"><i class="fas fa-bullhorn"></i> Anunțuri</div>
+        <div class="nav-link" onclick="showTab('applications')"><i class="fas fa-file-signature"></i> Aplicații</div>
+        <div class="nav-link" onclick="showTab('players')"><i class="fas fa-users"></i> Jucători</div>
+        <div id="adminTab" class="nav-link hidden" onclick="showTab('admin')"><i class="fas fa-user-crown" style="color:var(--red)"></i> Administrare</div>
+        
+        <div style="position: absolute; bottom: 30px; width: calc(100% - 60px);">
+            <div id="userProfile" class="hidden">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <img id="myAvatar" src="" style="width: 40px; border-radius: 50%;">
+                    <div>
+                        <div id="myUsername" style="font-weight: 700; font-size: 0.9rem;">User</div>
+                        <div id="myTag" class="tag user">User</div>
+                    </div>
+                </div>
+                <button onclick="logout()" style="background: none; border: none; color: #ef4444; font-size: 0.8rem; cursor: pointer;">Deconectare</button>
+            </div>
+            <button id="loginBtn" class="btn-primary" style="width: 100%;" onclick="login()">Login Discord</button>
+        </div>
+    </aside>
 
-<div class="container">
-    <div id="adminPanel">
-        <h2 style="color: var(--red);"><i class="fas fa-crown"></i> Panou Fondator</h2>
-        <div class="admin-controls">
-            <button class="admin-btn" onclick="toggleOption('shop')">Toggle Shop</button>
-            <button class="admin-btn" onclick="toggleOption('staff_apps')">Toggle Staff Apps</button>
-            <button class="admin-btn" onclick="toggleOption('faction_apps')">Toggle Faction Apps</button>
-        </div>
-        <div id="appsList" style="margin-top: 25px;">
-            <p style="font-size: 0.9rem; color: #64748b;">Aplicații în așteptare:</p>
-            <div id="pendingApps"></div>
-        </div>
-    </div>
+    <main>
+        <header class="header">
+            <h2 id="tabTitle">Acasă</h2>
+            <input type="text" class="search-bar" placeholder="Caută jucător..." onkeyup="searchPlayers(this.value)">
+        </header>
 
-    <div class="grid">
-        <div class="card">
-            <div id="badge-shop" class="status-badge"></div>
-            <i class="fas fa-shopping-bag fa-2x" style="color:var(--blue); margin-bottom:15px; display:block;"></i>
-            <h3>Shop Server</h3>
-            <p style="font-size: 0.85rem; color: #64748b; margin-top: 10px;">Achiziționează mașini VIP și monede.</p>
-            <a href="https://tebex.io" id="btn-shop" class="btn">ACCESEAZĂ</a>
-        </div>
+        <section id="tab-home" class="tab-content">
+            <div class="section-card announcement">
+                <h3><i class="fas fa-star" style="color: var(--gold)"></i> Bine ai venit pe Swit RP!</h3>
+                <p style="color: #94a3b8; margin-top: 10px;">Acesta este noul hub central al comunității. Aici poți aplica pentru facțiuni, poți vedea anunțurile staff-ului și poți interacționa cu ceilalți jucători.</p>
+            </div>
+            <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="section-card">
+                    <h4>Shop Server</h4>
+                    <p style="font-size: 0.8rem; color: #64748b; margin: 10px 0;">Vrei să susții serverul? Vizitează shop-ul nostru pentru beneficii VIP.</p>
+                    <a href="https://tebex.io" target="_blank" class="btn-primary" style="display: inline-block; text-decoration: none; font-size: 0.8rem;">Deschide Shop</a>
+                </div>
+            </div>
+        </section>
 
-        <div class="card">
-            <div id="badge-staff_apps" class="status-badge"></div>
-            <i class="fas fa-shield-alt fa-2x" style="color:var(--blue); margin-bottom:15px; display:block;"></i>
-            <h3>Aplicații Staff</h3>
-            <p style="font-size: 0.85rem; color: #64748b; margin-top: 10px;">Alătură-te echipei administrative.</p>
-            <button id="btn-staff_apps" onclick="sendApp('staff')" class="btn">APLICĂ ACUM</button>
-        </div>
+        <section id="tab-announcements" class="tab-content hidden">
+            <div id="announcementsList">
+                <div class="section-card">
+                    <span class="tag admin">System</span>
+                    <h4 style="margin-top: 10px;">Lansarea noului portal</h4>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 5px;">Portalul a fost conectat oficial la baza de date Supabase.</p>
+                </div>
+            </div>
+        </section>
 
-        <div class="card">
-            <div id="badge-faction_apps" class="status-badge"></div>
-            <i class="fas fa-users fa-2x" style="color:var(--blue); margin-bottom:15px; display:block;"></i>
-            <h3>Aplicații Facțiuni</h3>
-            <p style="font-size: 0.85rem; color: #64748b; margin-top: 10px;">Intră în LSPD, SMURD sau Mafii.</p>
-            <button id="btn-faction_apps" onclick="sendApp('faction')" class="btn">APLICĂ ACUM</button>
-        </div>
-    </div>
+        <section id="tab-applications" class="tab-content hidden">
+            <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="section-card">
+                    <h4>Staff Application</h4>
+                    <div id="status-staff_apps" style="margin: 10px 0;">Verificare status...</div>
+                    <button id="btn-staff_apps" class="btn-primary" onclick="openApply('staff')">Aplică</button>
+                </div>
+                <div class="section-card">
+                    <h4>Faction Application</h4>
+                    <div id="status-faction_apps" style="margin: 10px 0;">Verificare status...</div>
+                    <button id="btn-faction_apps" class="btn-primary" onclick="openApply('faction')">Aplică</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-players" class="tab-content hidden">
+            <div id="playersList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+                </div>
+        </section>
+
+        <section id="tab-admin" class="tab-content hidden">
+            <div class="section-card" style="border-color: var(--red);">
+                <h3 style="color: var(--red);">Control Panel</h3>
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button class="btn-primary" onclick="toggleSystem('staff_apps')">Toggle Staff Apps</button>
+                    <button class="btn-primary" onclick="toggleSystem('faction_apps')">Toggle Faction Apps</button>
+                </div>
+            </div>
+            <h3>Aplicații în Așteptare</h3>
+            <div id="adminApps"></div>
+        </section>
+    </main>
 </div>
 
 <script>
@@ -109,81 +151,156 @@
     const OWNER_ID = '1444054508484169728';
 
     const sb = supabase.createClient(S_URL, S_KEY);
-    let user = null;
+    let currentUser = null;
 
-    async function refreshUI() {
-        const { data: settings } = await sb.from('server_settings').select('*');
-        settings.forEach(s => {
-            const badge = document.getElementById(`badge-${s.id}`);
-            const btn = document.getElementById(`btn-${s.id}`);
-            if(s.is_open) {
-                badge.className = "status-badge status-open";
-                badge.innerHTML = '<i class="fas fa-check-circle"></i> DESCHIS';
-                btn.className = "btn btn-blue";
-            } else {
-                badge.className = "status-badge status-closed";
-                badge.innerHTML = '<i class="fas fa-times-circle"></i> ÎNCHIS';
-                btn.className = "btn btn-disabled";
-            }
-        });
+    // --- LOGICA UI ---
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.remove('hidden');
+        document.getElementById('tabTitle').innerText = tabId.charAt(0).toUpperCase() + tabId.slice(1);
+        if(tabId === 'players') loadAllPlayers();
+        if(tabId === 'admin') loadPendingApps();
     }
 
-    async function toggleOption(id) {
-        if(user?.id !== OWNER_ID) return;
-        const { data } = await sb.from('server_settings').select('is_open').eq('id', id).single();
-        await sb.from('server_settings').update({ is_open: !data.is_open }).eq('id', id);
-        refreshUI();
-    }
-
-    async function sendApp(type) {
-        if(!user) return alert("Trebuie să te loghezi întâi!");
-        const msg = prompt(`Scrie aplicația ta pentru ${type}:`);
-        if(msg) {
-            await sb.from('applications').insert({ discord_id: user.id, username: user.username, type: type, content: msg });
-            alert("Aplicația a fost trimisă!");
-        }
-    }
-
-    async function loadApps() {
-        if(user?.id !== OWNER_ID) return;
-        const { data } = await sb.from('applications').select('*').eq('status', 'pending');
-        const container = document.getElementById('pendingApps');
-        container.innerHTML = data.length ? '' : '<p style="color:#444; font-size:0.8rem;">Nicio aplicație nouă.</p>';
-        data.forEach(a => {
-            container.innerHTML += `
-                <div class="app-item">
-                    <p><b>${a.username}</b> (${a.type}): ${a.content}</p>
-                    <div style="margin-top:10px;">
-                        <button onclick="updateApp('${a.id}', 'accepted')" style="color:var(--green); background:none; border:none; cursor:pointer; font-weight:bold;">[ACCEPTĂ]</button>
-                        <button onclick="updateApp('${a.id}', 'rejected')" style="color:var(--red); background:none; border:none; cursor:pointer; font-weight:bold; margin-left:10px;">[RESPINGE]</button>
-                    </div>
-                </div>`;
-        });
-    }
-
-    async function updateApp(id, status) {
-        await sb.from('applications').update({ status: status }).eq('id', id);
-        loadApps();
-    }
-
+    // --- AUTH ---
     function login() {
         window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}&response_type=token&scope=identify`;
     }
 
-    window.onload = async () => {
-        refreshUI();
-        const frag = new URLSearchParams(window.location.hash.slice(1));
-        const token = frag.get('access_token');
-        if (token) {
-            const res = await fetch('https://discord.com/api/users/@me', { headers: { authorization: `Bearer ${token}` } });
-            user = await res.json();
-            document.getElementById('authZone').innerHTML = `<div class="user-info"><img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png"> <span>${user.username}</span></div>`;
-            if(user.id === OWNER_ID) {
-                document.getElementById('adminPanel').style.display = 'block';
-                loadApps();
-            }
+    function logout() {
+        localStorage.removeItem('discord_token');
+        location.reload();
+    }
+
+    async function checkAuth() {
+        let token = localStorage.getItem('discord_token');
+        const hash = new URLSearchParams(window.location.hash.slice(1));
+        if(hash.get('access_token')) {
+            token = hash.get('access_token');
+            localStorage.setItem('discord_token', token);
             window.history.replaceState({}, document.title, "/");
         }
+
+        if(token) {
+            const r = await fetch('https://discord.com/api/users/@me', { headers: { authorization: `Bearer ${token}` } });
+            if(r.ok) {
+                currentUser = await r.json();
+                updateUserUI();
+            } else {
+                localStorage.removeItem('discord_token');
+            }
+        }
+    }
+
+    async function updateUserUI() {
+        document.getElementById('loginBtn').classList.add('hidden');
+        document.getElementById('userProfile').classList.remove('hidden');
+        
+        // Luam datele din DB pentru rank
+        const { data } = await sb.from('profiles').select('*').eq('discord_id', currentUser.id).single();
+        let rank = data?.rank || 'User';
+        
+        // Auto-Fondator
+        if(currentUser.id === OWNER_ID) {
+            rank = 'Fondator';
+            document.getElementById('adminTab').classList.remove('hidden');
+        }
+
+        document.getElementById('myUsername').innerText = currentUser.username;
+        document.getElementById('myAvatar').src = `https://cdn.discordapp.com/avatars/${currentUser.id}/${currentUser.avatar}.png`;
+        const tag = document.getElementById('myTag');
+        tag.innerText = rank;
+        tag.className = 'tag ' + rank.toLowerCase().replace(' ', '-');
+
+        // Sincronizam cu DB
+        await sb.from('profiles').upsert({ 
+            discord_id: currentUser.id, 
+            username: currentUser.username, 
+            avatar: `https://cdn.discordapp.com/avatars/${currentUser.id}/${currentUser.avatar}.png`,
+            rank: rank
+        }, { onConflict: 'discord_id' });
+    }
+
+    // --- DB ACTIONS ---
+    async function loadSettings() {
+        const { data } = await sb.from('server_settings').select('*');
+        data.forEach(s => {
+            const btn = document.getElementById('btn-' + s.id);
+            const status = document.getElementById('status-' + s.id);
+            if(s.is_open) {
+                status.innerHTML = `<span style="color:var(--green)">● Deschise</span>`;
+                btn.disabled = false; btn.className = 'btn-primary';
+            } else {
+                status.innerHTML = `<span style="color:var(--red)">● Închise</span>`;
+                btn.disabled = true; btn.className = 'btn-primary user';
+            }
+        });
+    }
+
+    async function toggleSystem(id) {
+        const { data } = await sb.from('server_settings').select('is_open').eq('id', id).single();
+        await sb.from('server_settings').update({ is_open: !data.is_open }).eq('id', id);
+        loadSettings();
+    }
+
+    async function openApply(type) {
+        if(!currentUser) return alert("Loghează-te!");
+        const content = prompt(`Introdu aplicația ta pentru ${type}:`);
+        if(content) {
+            await sb.from('applications').insert({ discord_id: currentUser.id, username: currentUser.username, type: type, content: content });
+            alert("Trimisă!");
+        }
+    }
+
+    async function loadPendingApps() {
+        const { data } = await sb.from('applications').select('*').eq('status', 'pending');
+        const container = document.getElementById('adminApps');
+        container.innerHTML = '';
+        data.forEach(a => {
+            container.innerHTML += `
+                <div class="app-box">
+                    <b>${a.username}</b> aplică pentru <b>${a.type}</b><br>
+                    <p style="font-size:0.8rem; color:#aaa; margin:10px 0;">${a.content}</p>
+                    <button onclick="handleApp('${a.id}', 'accepted')" style="color:var(--green); background:none; border:none; cursor:pointer;">Acceptă</button> | 
+                    <button onclick="handleApp('${a.id}', 'rejected')" style="color:var(--red); background:none; border:none; cursor:pointer;">Respinge</button>
+                </div>`;
+        });
+    }
+
+    async function handleApp(id, status) {
+        await sb.from('applications').update({ status: status }).eq('id', id);
+        loadPendingApps();
+    }
+
+    async function loadAllPlayers() {
+        const { data } = await sb.from('profiles').select('*').limit(20);
+        const container = document.getElementById('playersList');
+        container.innerHTML = '';
+        data.forEach(p => {
+            container.innerHTML += `
+                <div class="section-card" style="text-align:center; padding: 15px;">
+                    <img src="${p.avatar}" style="width:60px; border-radius:50%; margin-bottom:10px;">
+                    <div style="font-weight:700; font-size:0.8rem;">${p.username}</div>
+                    <div class="tag ${p.rank.toLowerCase().replace(' ', '-')}">${p.rank}</div>
+                </div>`;
+        });
+    }
+
+    async function searchPlayers(val) {
+        if(val.length < 2) return;
+        showTab('players');
+        const { data } = await sb.from('profiles').select('*').ilike('username', `%${val}%`);
+        const container = document.getElementById('playersList');
+        container.innerHTML = '';
+        data.forEach(p => {
+            container.innerHTML += `<div class="section-card" style="text-align:center;">...</div>`; // Acelasi format ca mai sus
+        });
+    }
+
+    window.onload = () => {
+        checkAuth();
+        loadSettings();
     };
 </script>
 </body>
